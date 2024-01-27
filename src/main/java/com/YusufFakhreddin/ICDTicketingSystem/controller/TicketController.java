@@ -1,7 +1,9 @@
 package com.YusufFakhreddin.ICDTicketingSystem.controller;
 
+import com.YusufFakhreddin.ICDTicketingSystem.ErrorHandling.CustomException;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Ticket;
 import com.YusufFakhreddin.ICDTicketingSystem.service.TicketService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,11 +27,13 @@ public class TicketController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Ticket> getTicket(@PathVariable String id) {
+    public ResponseEntity<Ticket> getTicket(@PathVariable String id) throws CustomException {
 //        log the id
         System.out.println(id);
-        return ResponseEntity.ok(ticketService.getTicket(id));
+        Ticket ticket = ticketService.getTicket(id);
+        return ResponseEntity.ok(ticket);
     }
+
     @PostMapping
     public ResponseEntity<Ticket> createTicket(@RequestBody Ticket ticket) {
         //        log executing this method and the ticket
@@ -40,19 +44,19 @@ public class TicketController {
         return ResponseEntity.ok(ticketService.createTicket(ticket));
     }
     @PutMapping("/{id}")
-    public ResponseEntity<Ticket> updateTicket(@PathVariable String id, @RequestBody Ticket ticket) {
+    public ResponseEntity<Ticket> updateTicket(@PathVariable String id, @RequestBody Ticket ticket) throws CustomException {
         //        log executing this method and the ticket
         System.out.println("Updating ticket");
-//        append id to ticket object
-        ticket.setId(id);
-        ticketService.updateTicket(ticket);
+
+        ticketService.updateTicket(id,ticket);
         return ResponseEntity.ok(ticketService.getTicket(id));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTicket(@PathVariable String id) {
+    public ResponseEntity<Void> deleteTicket(@PathVariable String id) throws CustomException {
         //        log executing this method
         System.out.println("Deleting ticket");
+
         ticketService.deleteTicket(id);
         return ResponseEntity.ok().build();
     }
