@@ -49,6 +49,13 @@ public class TicketController {
         return ResponseEntity.ok(ticketService.getTicket(id));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTicket(@PathVariable String id) {
+        //        log executing this method
+        System.out.println("Deleting ticket");
+        ticketService.deleteTicket(id);
+        return ResponseEntity.ok().build();
+    }
 
 
 
