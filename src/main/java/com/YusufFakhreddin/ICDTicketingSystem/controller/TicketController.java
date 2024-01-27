@@ -23,13 +23,32 @@ public class TicketController {
         System.out.println("Getting all tickets");
         return ResponseEntity.ok(ticketService.getAllTickets());
     }
-    
+
     @GetMapping("/{id}")
     public ResponseEntity<Ticket> getTicket(@PathVariable String id) {
 //        log the id
         System.out.println(id);
         return ResponseEntity.ok(ticketService.getTicket(id));
     }
+    @PostMapping
+    public ResponseEntity<Ticket> createTicket(@RequestBody Ticket ticket) {
+        //        log executing this method and the ticket
+        System.out.println("Creating ticket");
+        // also just in case they pass an id in JSON ... set id to 0
+        // this is to force a save of new item ... instead of update
+        ticket.setId("0");
+        return ResponseEntity.ok(ticketService.createTicket(ticket));
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<Ticket> updateTicket(@PathVariable String id, @RequestBody Ticket ticket) {
+        //        log executing this method and the ticket
+        System.out.println("Updating ticket");
+//        append id to ticket object
+        ticket.setId(id);
+        ticketService.updateTicket(ticket);
+        return ResponseEntity.ok(ticketService.getTicket(id));
+    }
+
 
 
 
