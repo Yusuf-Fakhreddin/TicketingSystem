@@ -3,11 +3,16 @@ package com.YusufFakhreddin.ICDTicketingSystem.controller;
 import com.YusufFakhreddin.ICDTicketingSystem.ErrorHandling.CustomException;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Ticket;
 import com.YusufFakhreddin.ICDTicketingSystem.service.TicketService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/ticket")
@@ -35,20 +40,29 @@ public class TicketController {
     }
 
     @PostMapping
-    public ResponseEntity<Ticket> createTicket(@RequestBody Ticket ticket) {
-        //        log executing this method and the ticket
+    public ResponseEntity<Ticket> createTicket(@RequestBody @Validated Ticket ticket, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            Map<String, String> errors = new HashMap<>();
+            bindingResult.getFieldErrors().forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
+            System.out.println(errors.toString());
+            throw new CustomException(HttpStatus.BAD_REQUEST.value(), "Validation errors occurred", errors);
+        }
         System.out.println("Creating ticket");
-        // also just in case they pass an id in JSON ... set id to 0
-        // this is to force a save of new item ... instead of update
         ticket.setId("0");
         return ResponseEntity.ok(ticketService.createTicket(ticket));
     }
     @PutMapping("/{id}")
-    public ResponseEntity<Ticket> updateTicket(@PathVariable String id, @RequestBody Ticket ticket) throws CustomException {
-        //        log executing this method and the ticket
+    public ResponseEntity<?> updateTicket(@PathVariable String id, @RequestBody @Validated Ticket ticket, BindingResult bindingResult) throws CustomException {
         System.out.println("Updating ticket");
 
-        ticketService.updateTicket(id,ticket);
+        if (bindingResult.hasErrors()) {
+            Map<String, String> errors = new HashMap<>();
+            bindingResult.getFieldErrors().forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
+            System.out.println(errors.toString());
+            throw new CustomException(HttpStatus.BAD_REQUEST.value(), "Validation errors occurred", errors);
+        }
+
+        ticketService.updateTicket(id, ticket);
         return ResponseEntity.ok(ticketService.getTicket(id));
     }
 
