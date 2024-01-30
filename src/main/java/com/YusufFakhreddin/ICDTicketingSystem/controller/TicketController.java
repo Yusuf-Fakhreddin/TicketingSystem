@@ -2,6 +2,7 @@ package com.YusufFakhreddin.ICDTicketingSystem.controller;
 
 import com.YusufFakhreddin.ICDTicketingSystem.ErrorHandling.CustomException;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Ticket;
+import com.YusufFakhreddin.ICDTicketingSystem.response.ApiResopnse;
 import com.YusufFakhreddin.ICDTicketingSystem.service.TicketService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -25,22 +26,22 @@ public class TicketController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Ticket>> getAllTickets() {
+    public ApiResopnse<List<Ticket>> getAllTickets() {
 //        log executing this method
         System.out.println("Getting all tickets");
-        return ResponseEntity.ok(ticketService.getAllTickets());
+        return new ApiResopnse<>(HttpStatus.OK.value(), "Tickets retrieved successfully", ticketService.getAllTickets());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Ticket> getTicket(@PathVariable String id) throws CustomException {
+    public ApiResopnse<Ticket> getTicket(@PathVariable String id) throws CustomException {
 //        log the id
         System.out.println(id);
         Ticket ticket = ticketService.getTicket(id);
-        return ResponseEntity.ok(ticket);
+        return new ApiResopnse<>(HttpStatus.OK.value(), "Ticket retrieved successfully", ticket);
     }
 
     @PostMapping
-    public ResponseEntity<Ticket> createTicket(@RequestBody @Validated Ticket ticket, BindingResult bindingResult) {
+    public ApiResopnse<?> createTicket(@RequestBody @Validated Ticket ticket, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             Map<String, String> errors = new HashMap<>();
             bindingResult.getFieldErrors().forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
@@ -49,10 +50,11 @@ public class TicketController {
         }
         System.out.println("Creating ticket");
         ticket.setId("0");
-        return ResponseEntity.ok(ticketService.createTicket(ticket));
+        Ticket createdTicket = ticketService.createTicket(ticket);
+        return new ApiResopnse<>(HttpStatus.CREATED.value(), "Ticket created successfully", createdTicket);
     }
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateTicket(@PathVariable String id, @RequestBody @Validated Ticket ticket, BindingResult bindingResult) throws CustomException {
+    public ApiResopnse<?> updateTicket(@PathVariable String id, @RequestBody @Validated Ticket ticket, BindingResult bindingResult) throws CustomException {
         System.out.println("Updating ticket");
 
         if (bindingResult.hasErrors()) {
@@ -63,16 +65,18 @@ public class TicketController {
         }
 
         ticketService.updateTicket(id, ticket);
-        return ResponseEntity.ok(ticketService.getTicket(id));
+//        find ticket updated by id
+        Ticket updatedTicket = ticketService.getTicket(id);
+        return new ApiResopnse<>(HttpStatus.OK.value(), "Ticket updated successfully", updatedTicket);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTicket(@PathVariable String id) throws CustomException {
+    public ApiResopnse<Void> deleteTicket(@PathVariable String id) throws CustomException {
         //        log executing this method
         System.out.println("Deleting ticket");
 
         ticketService.deleteTicket(id);
-        return ResponseEntity.ok().build();
+        return new ApiResopnse<>(HttpStatus.NO_CONTENT.value(), "Ticket deleted successfully", null);
     }
 
 
