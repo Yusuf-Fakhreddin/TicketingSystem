@@ -3,6 +3,8 @@ package com.YusufFakhreddin.ICDTicketingSystem.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 
+import java.util.List;
+
 @Entity
 @Table(name = "ticket")
 public class Ticket {
@@ -27,6 +29,10 @@ public class Ticket {
 
 
     private String assigned_team;
+
+    // link to comment
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL)
+    private List<Comment> comments;
 
     public Ticket() {
     }
@@ -112,6 +118,14 @@ public class Ticket {
 
     public void setAssigned_team(String assigned_team) {
         this.assigned_team = assigned_team;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 
 }
