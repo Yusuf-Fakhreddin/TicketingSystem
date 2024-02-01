@@ -12,15 +12,21 @@ public class Comment {
     private String id;
     private String ticket_id;
     private String comment;
+
     private String date;
     private String time;
 
-    // link to ticket
-    @ManyToOne
-    @JoinColumn(name = "ticket_id", insertable = false, updatable = false)
-    private Ticket ticket;
+
 
     public Comment() {
+    }
+
+//    constructor to initialize date and time with current date and time
+    public Comment(String ticket_id, String comment) {
+        this.ticket_id = ticket_id;
+        this.comment = comment;
+        this.date= java.time.LocalDate.now().toString();
+        this.time= java.time.LocalTime.now().toString();
     }
 
     public Comment(String ticket_id, String comment, String date, String time) {
@@ -28,10 +34,6 @@ public class Comment {
         this.comment = comment;
         this.date = date;
         this.time = time;
-    }
-
-    public String getTicket_id() {
-        return ticket_id;
     }
 
 
@@ -59,15 +61,16 @@ public class Comment {
         this.id = id;
     }
 
-    public Ticket getTicket() {
-        return ticket;
+//    ticket_id getters and setters
+    public void setTicket_id(String ticket_id) {
+        this.ticket_id = ticket_id;
+    }
+    public String getTicket_id() {
+        return ticket_id;
     }
 
-    public void setTicket(Ticket ticket) {
-        this.ticket = ticket;
-    }
 
-//    Define toString method
+    //    Define toString method
     @Override
     public String toString() {
         return "Comment{" +
@@ -76,7 +79,6 @@ public class Comment {
                 ", comment='" + comment + '\'' +
                 ", date='" + date + '\'' +
                 ", time='" + time + '\'' +
-                ", ticket=" + ticket +
                 '}';
     }
 

@@ -1,5 +1,7 @@
 package com.YusufFakhreddin.ICDTicketingSystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 
@@ -31,7 +33,8 @@ public class Ticket {
     private String assigned_team;
 
     // link to comment
-    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @JoinColumn(name = "ticket_id")
     private List<Comment> comments;
 
     public Ticket() {
@@ -49,9 +52,6 @@ public class Ticket {
         this.assigned_user = assigned_user;
         this.assigned_team = assigned_team;
     }
-
-
-
 
 
     public String getTitle() {
@@ -127,5 +127,31 @@ public class Ticket {
     public void setComments(List<Comment> comments) {
         this.comments = comments;
     }
+
+
+    public void addComment(Comment comment) {
+        comment.setTicket_id(this.id);
+        this.comments.add(comment);
+    }
+
+    //    Define toString method
+    @Override
+    public String toString() {
+        return "Ticket{" +
+                "id='" + id + '\'' +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", status='" + status + '\'' +
+                ", priority='" + priority + '\'' +
+                ", type='" + type + '\'' +
+                ", date='" + date + '\'' +
+                ", time='" + time + '\'' +
+                ", owner='" + owner + '\'' +
+                ", assigned_user='" + assigned_user + '\'' +
+                ", assigned_team='" + assigned_team + '\'' +
+                ", comments=" + comments +
+                '}';
+    }
+
 
 }

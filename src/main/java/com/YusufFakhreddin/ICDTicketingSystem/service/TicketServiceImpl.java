@@ -1,8 +1,11 @@
 package com.YusufFakhreddin.ICDTicketingSystem.service;
 
 import com.YusufFakhreddin.ICDTicketingSystem.ErrorHandling.CustomException;
+import com.YusufFakhreddin.ICDTicketingSystem.dao.CommentRepo;
 import com.YusufFakhreddin.ICDTicketingSystem.dao.TicketRepo;
+import com.YusufFakhreddin.ICDTicketingSystem.entity.Comment;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Ticket;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -10,10 +13,15 @@ import java.util.List;
 
 @Service
 public class TicketServiceImpl implements TicketService{
-    private TicketRepo ticketRepo;
 
-    public TicketServiceImpl(TicketRepo ticketRepo){
+    @Autowired
+    private TicketRepo ticketRepo;
+    @Autowired
+    private CommentRepo commentRepo;
+
+    public TicketServiceImpl(TicketRepo ticketRepo, CommentRepo commentRepo){
         this.ticketRepo = ticketRepo;
+        this.commentRepo = commentRepo;
     }
 
     @Override
@@ -28,6 +36,7 @@ public class TicketServiceImpl implements TicketService{
         if (ticket == null) {
             throw new CustomException(HttpStatus.NOT_FOUND.value(),"Ticket id not found - " + id);
         }
+
         return ticket;
 
     }
@@ -58,4 +67,14 @@ public class TicketServiceImpl implements TicketService{
 
         ticketRepo.deleteById(id);
     }
+
+
+    public Ticket addCommentToTicket(String ticketId, Comment comment) {
+        Ticket ticket = ticketRepo.findById(ticketId).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND.value(),"Ticket id not found - " + ticketId));
+        ticket.addComment(comment);
+        commentRepo.save(comment);
+        return ticketRepo.save(ticket);
+    }
+
+
 }

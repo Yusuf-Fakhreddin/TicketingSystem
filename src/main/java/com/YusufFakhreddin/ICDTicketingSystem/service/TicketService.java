@@ -1,5 +1,6 @@
 package com.YusufFakhreddin.ICDTicketingSystem.service;
 
+import com.YusufFakhreddin.ICDTicketingSystem.entity.Comment;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Ticket;
 import java.util.List;
 
@@ -9,5 +10,7 @@ public interface TicketService {
     List<Ticket> getAllTickets();
     Ticket updateTicket(String id,Ticket ticket);
     void deleteTicket(String id);
+
+    Ticket addCommentToTicket(String id, Comment comment);
 }
 

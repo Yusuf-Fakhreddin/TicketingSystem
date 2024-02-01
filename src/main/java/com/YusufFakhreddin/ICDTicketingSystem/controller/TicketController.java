@@ -1,9 +1,11 @@
 package com.YusufFakhreddin.ICDTicketingSystem.controller;
 
 import com.YusufFakhreddin.ICDTicketingSystem.ErrorHandling.CustomException;
+import com.YusufFakhreddin.ICDTicketingSystem.entity.Comment;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Ticket;
 import com.YusufFakhreddin.ICDTicketingSystem.response.ApiResopnse;
 import com.YusufFakhreddin.ICDTicketingSystem.service.TicketService;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +38,7 @@ public class TicketController {
     public ApiResopnse<Ticket> getTicket(@PathVariable String id) throws CustomException {
 //        log the id
         System.out.println(id);
+//        get ticket and its comments
         Ticket ticket = ticketService.getTicket(id);
         return new ApiResopnse<>(HttpStatus.OK.value(), "Ticket retrieved successfully", ticket);
     }
@@ -80,5 +83,11 @@ public class TicketController {
     }
 
 
+    @PostMapping("/{id}/comments")
+    @Transactional
+    public ApiResopnse<?> addCommentToTicket(@PathVariable String id, @RequestBody Comment comment) {
+        Ticket ticket= ticketService.addCommentToTicket(id, comment);
+        return new ApiResopnse<>(HttpStatus.OK.value(), "Comment added successfully", ticket);
+    }
 
 }
