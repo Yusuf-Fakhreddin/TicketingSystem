@@ -10,17 +10,17 @@ CREATE TABLE `users` (
 
 -- Default passwords here are: fun123 using bcrypt calculator
 
-INSERT INTO `members`
+INSERT INTO `users`
 VALUES
-('john','{bcrypt}$2a$10$qeS0HEh7urweMojsnwNAR.vcXJeXR1UcMRZ2WcGQl9YeuspUdgF.q',1),
-('mary','{bcrypt}$2a$10$qeS0HEh7urweMojsnwNAR.vcXJeXR1UcMRZ2WcGQl9YeuspUdgF.q',1),
-('susan','{bcrypt}$2a$10$qeS0HEh7urweMojsnwNAR.vcXJeXR1UcMRZ2WcGQl9YeuspUdgF.q',1);
+('john','{noop}fun123',1),
+('mary','{noop}fun123',1),
+('susan','{noop}fun123',1);
 
 CREATE TABLE `roles` (
   `user_id` varchar(50) NOT NULL,
   `role` varchar(50) NOT NULL,
   UNIQUE KEY `authorities5_idx_1` (`user_id`,`role`),
-  CONSTRAINT `authorities5_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `members` (`user_id`)
+  CONSTRAINT `authorities5_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 

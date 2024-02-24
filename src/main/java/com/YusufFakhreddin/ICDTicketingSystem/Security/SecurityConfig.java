@@ -24,7 +24,7 @@ public class SecurityConfig {
         JdbcUserDetailsManager jdbcUserDetailsManager= new JdbcUserDetailsManager(dataSource);
 
 //      define query to retrieve a user by username
-        jdbcUserDetailsManager.setUsersByUsernameQuery("select user_id, password, active from members where user_id = ?");
+        jdbcUserDetailsManager.setUsersByUsernameQuery("select user_id, password, active from users where user_id = ?");
 //      define query to retrieve the user authorities by username
         jdbcUserDetailsManager.setAuthoritiesByUsernameQuery("select user_id, role from roles where user_id = ?");
 
@@ -36,9 +36,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(configurer-> configurer.requestMatchers(HttpMethod.GET, "/api/ticket/**").hasRole("EMPLOYEE")
-                .requestMatchers(HttpMethod.POST, "/api/employees/**").hasRole("EMPLOYEE")
-                .requestMatchers(HttpMethod.PUT, "/api/employees/**").hasRole("EMPLOYEE")
-                .requestMatchers(HttpMethod.DELETE, "/api/employees/**").hasRole("ADMIN"));
+                .requestMatchers(HttpMethod.POST, "/api/ticket/**").hasRole("EMPLOYEE")
+                .requestMatchers(HttpMethod.PUT, "/api/ticket/**").hasRole("EMPLOYEE")
+                .requestMatchers(HttpMethod.DELETE, "/api/ticket/**").hasRole("ADMIN"));
 
 //      use http basic authentication
         http.httpBasic(Customizer.withDefaults());
