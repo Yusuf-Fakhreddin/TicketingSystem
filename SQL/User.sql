@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS `roles`;
 DROP TABLE IF EXISTS `users`;
 
 CREATE TABLE `users` (
-  `user_id` varchar(50) NOT NULL,
+  `username` varchar(50) NOT NULL,
   `password` char(68) NOT NULL,
   `active` tinyint NOT NULL,
   PRIMARY KEY (`user_id`)
@@ -17,7 +17,7 @@ VALUES
 ('susan','{noop}fun123',1);
 
 CREATE TABLE `roles` (
-  `user_id` varchar(50) NOT NULL,
+  `username` varchar(50) NOT NULL,
   `role` varchar(50) NOT NULL,
   UNIQUE KEY `authorities5_idx_1` (`user_id`,`role`),
   CONSTRAINT `authorities5_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`)

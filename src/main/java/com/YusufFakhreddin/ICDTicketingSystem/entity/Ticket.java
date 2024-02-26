@@ -26,7 +26,9 @@ public class Ticket {
     private String date;
     private String time;
 
-    private String owner;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User owner;
 
     private String assigned_user;
 

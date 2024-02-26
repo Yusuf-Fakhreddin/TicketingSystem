@@ -3,27 +3,30 @@ package com.YusufFakhreddin.ICDTicketingSystem.controller;
 import com.YusufFakhreddin.ICDTicketingSystem.ErrorHandling.CustomException;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Comment;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Ticket;
+import com.YusufFakhreddin.ICDTicketingSystem.entity.User;
 import com.YusufFakhreddin.ICDTicketingSystem.response.ApiResopnse;
 import com.YusufFakhreddin.ICDTicketingSystem.service.TicketService;
+import com.YusufFakhreddin.ICDTicketingSystem.service.UserService;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/ticket")
+@RequiredArgsConstructor
 public class TicketController {
 
     private final TicketService ticketService;
+    private final UserService userService;
 
-    public TicketController(TicketService ticketService) {
-        this.ticketService = ticketService;
-    }
 
     @GetMapping
     public ApiResopnse<List<Ticket>> getAllTickets() {
@@ -51,6 +54,11 @@ public class TicketController {
         }
         System.out.println("Creating ticket");
         ticket.setId("0");
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = userService.findUserByUsername(auth.getName());
+
+        ticket.setOwner(user);
+
         Ticket createdTicket = ticketService.createTicket(ticket);
         return new ApiResopnse<>(HttpStatus.CREATED.value(), "Ticket created successfully", createdTicket);
     }
