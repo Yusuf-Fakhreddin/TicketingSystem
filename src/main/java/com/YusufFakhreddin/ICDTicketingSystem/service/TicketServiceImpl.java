@@ -76,5 +76,17 @@ public class TicketServiceImpl implements TicketService{
         return ticketRepo.save(ticket);
     }
 
+    public List<Ticket> getTicketsByOwner(String username){
+        return ticketRepo.findTicketsByOwner_Username(username);
+    }
+
+    public List<Ticket> getTicketsByOwnerAndStatus(String username, String status){
+        return ticketRepo.findTicketsByOwner_UsernameAndStatus(username, status);
+    }
+
+
+    public List<Ticket> getTicketsByTeamAndStatus(String teamName, String status){
+        return ticketRepo.findTicketsByAssignedTeamAndStatus(teamName, status);
+    }
 
 }

@@ -96,4 +96,21 @@ public class TicketController {
         return new ApiResopnse<>(HttpStatus.OK.value(), "Comment added successfully", ticket);
     }
 
+    @GetMapping("/owner/{username}")
+    public ApiResopnse<List<Ticket>> getTicketsByOwner(@PathVariable String username) {
+        return new ApiResopnse<>(HttpStatus.OK.value(), "Tickets retrieved successfully", ticketService.getTicketsByOwner(username));
+    }
+
+    @GetMapping("/owner/{username}/status/{status}")
+    public ApiResopnse<List<Ticket>> getTicketsByOwnerAndStatus(@PathVariable String username, @PathVariable String status) {
+        return new ApiResopnse<>(HttpStatus.OK.value(), "Tickets retrieved successfully", ticketService.getTicketsByOwnerAndStatus(username, status));
+    }
+
+    @GetMapping("/team/{teamName}/status/{status}")
+    public ApiResopnse<List<Ticket>> getTicketsByTeamAndStatus(@PathVariable String teamName, @PathVariable String status) {
+        return new ApiResopnse<>(HttpStatus.OK.value(), "Tickets retrieved successfully", ticketService.getTicketsByTeamAndStatus(teamName, status));
+    }
+
+
+
 }

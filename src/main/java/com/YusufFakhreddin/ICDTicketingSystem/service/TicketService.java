@@ -12,5 +12,11 @@ public interface TicketService {
     void deleteTicket(String id);
 
     Ticket addCommentToTicket(String id, Comment comment);
+
+    List<Ticket> getTicketsByOwner(String username);
+
+    List<Ticket> getTicketsByOwnerAndStatus(String username, String status);
+
+    List<Ticket> getTicketsByTeamAndStatus(String teamName, String status);
 }
 
