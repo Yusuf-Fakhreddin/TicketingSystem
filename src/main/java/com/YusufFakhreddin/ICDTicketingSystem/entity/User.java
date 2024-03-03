@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -23,4 +24,8 @@ public class User {
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Ticket> tickets;
+
+    @ManyToOne
+    @JoinColumn(name = "team_id")
+    private Team team;
 }

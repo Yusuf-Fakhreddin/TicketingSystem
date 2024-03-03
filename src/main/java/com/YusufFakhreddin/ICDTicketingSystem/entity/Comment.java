@@ -40,4 +40,7 @@ public class Comment {
                 '}';
     }
 
+    public void setTicket_id(String id) {
+        this.ticket_id = id;
+    }
 }

@@ -58,7 +58,7 @@ public class TicketController {
         User user = userService.findUserByUsername(auth.getName());
 
         ticket.setOwner(user);
-
+        ticket.setTeam(user.getTeam());
         Ticket createdTicket = ticketService.createTicket(ticket);
         return new ApiResopnse<>(HttpStatus.CREATED.value(), "Ticket created successfully", createdTicket);
     }

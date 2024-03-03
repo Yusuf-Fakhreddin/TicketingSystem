@@ -30,6 +30,9 @@ public class Ticket {
     @JoinColumn(name = "user_id", nullable = false)
     private User owner;
 
+    @ManyToOne
+    @JoinColumn(name = "team_id")
+    private Team ownerTeam;
     private String assigned_user;
 
 
