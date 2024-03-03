@@ -18,10 +18,11 @@ public interface TicketRepo extends JpaRepository<Ticket, String> {
 //    query to get tickets by owner
     List<Ticket> findTicketsByOwner_Username(String username);
 
-//    query to get tickets by owner and status
-    List<Ticket> findTicketsByOwner_UsernameAndStatus(String username, String status);
+//    query to get tickets by owner and status without comments
+    @Query("SELECT t FROM Ticket t WHERE t.owner.username = ?1 AND t.status = ?2")
+    List<Ticket> findTicketsByOwnerAndStatusWithoutComments(String username, String status);
 
-//    query to get tickets by assigned team and status
-
-    List<Ticket> findTicketsByAssignedTeamAndStatus(String teamName, String status);
+//    query to get tickets by assigned team and status without comments
+    @Query("SELECT t FROM Ticket t WHERE t.assignedTeam.teamName = ?1 AND t.status = ?2")
+    List<Ticket> findTicketsByTeamAndStatusWithoutComments(String teamName, String status);
 }

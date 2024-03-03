@@ -103,12 +103,12 @@ public class TicketController {
 
     @GetMapping("/owner/{username}/status/{status}")
     public ApiResopnse<List<Ticket>> getTicketsByOwnerAndStatus(@PathVariable String username, @PathVariable String status) {
-        return new ApiResopnse<>(HttpStatus.OK.value(), "Tickets retrieved successfully", ticketService.getTicketsByOwnerAndStatus(username, status));
+        return new ApiResopnse<>(HttpStatus.OK.value(), "Tickets retrieved successfully", ticketService.findTicketsByOwnerAndStatusWithoutComments(username, status));
     }
 
     @GetMapping("/team/{teamName}/status/{status}")
     public ApiResopnse<List<Ticket>> getTicketsByTeamAndStatus(@PathVariable String teamName, @PathVariable String status) {
-        return new ApiResopnse<>(HttpStatus.OK.value(), "Tickets retrieved successfully", ticketService.getTicketsByTeamAndStatus(teamName, status));
+        return new ApiResopnse<>(HttpStatus.OK.value(), "Tickets retrieved successfully", ticketService.findTicketsByTeamAndStatusWithoutComments(teamName, status));
     }
 
 

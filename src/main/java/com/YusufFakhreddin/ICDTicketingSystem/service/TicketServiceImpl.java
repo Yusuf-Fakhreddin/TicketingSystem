@@ -81,12 +81,12 @@ public class TicketServiceImpl implements TicketService{
     }
 
     public List<Ticket> getTicketsByOwnerAndStatus(String username, String status){
-        return ticketRepo.findTicketsByOwner_UsernameAndStatus(username, status);
+        return ticketRepo.findTicketsByOwnerAndStatusWithoutComments(username, status);
     }
 
 
     public List<Ticket> getTicketsByTeamAndStatus(String teamName, String status){
-        return ticketRepo.findTicketsByAssignedTeamAndStatus(teamName, status);
+        return ticketRepo.findTicketsByTeamAndStatusWithoutComments(teamName, status);
     }
 
 }

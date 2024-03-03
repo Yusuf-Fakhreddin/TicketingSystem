@@ -15,8 +15,8 @@ public interface TicketService {
 
     List<Ticket> getTicketsByOwner(String username);
 
-    List<Ticket> getTicketsByOwnerAndStatus(String username, String status);
+    List<Ticket> findTicketsByOwnerAndStatusWithoutComments(String username, String status);
 
-    List<Ticket> getTicketsByTeamAndStatus(String teamName, String status);
+    List<Ticket> findTicketsByTeamAndStatusWithoutComments(String teamName, String status);
 }
 
