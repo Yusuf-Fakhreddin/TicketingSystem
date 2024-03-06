@@ -4,6 +4,7 @@ import com.YusufFakhreddin.ICDTicketingSystem.ErrorHandling.CustomException;
 import com.YusufFakhreddin.ICDTicketingSystem.dao.CommentRepo;
 import com.YusufFakhreddin.ICDTicketingSystem.dao.TicketRepo;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Comment;
+import com.YusufFakhreddin.ICDTicketingSystem.entity.Team;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Ticket;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -80,6 +81,22 @@ public class TicketServiceImpl implements TicketService{
         return ticketRepo.findTicketsByOwner_Username(username);
     }
 
+    @Override
+    public List<Ticket> findTicketsByOwnerAndStatusWithoutComments(String username, String status) {
+        return ticketRepo.findTicketsByOwnerAndStatusWithoutComments(username, status);
+    }
+
+    @Override
+    public List<Ticket> findTicketsByTeamAndStatusWithoutComments(String teamName, String status) {
+        return ticketRepo.findTicketsByTeamAndStatusWithoutComments(teamName, status);
+    }
+
+
+    @Override
+    public List<Ticket> getTicketsByTeamWithoutComments(String team) {
+        return ticketRepo.findTicketsByTeamWithoutComments(team);
+    }
+
     public List<Ticket> getTicketsByOwnerAndStatus(String username, String status){
         return ticketRepo.findTicketsByOwnerAndStatusWithoutComments(username, status);
     }
@@ -88,5 +105,6 @@ public class TicketServiceImpl implements TicketService{
     public List<Ticket> getTicketsByTeamAndStatus(String teamName, String status){
         return ticketRepo.findTicketsByTeamAndStatusWithoutComments(teamName, status);
     }
+
 
 }

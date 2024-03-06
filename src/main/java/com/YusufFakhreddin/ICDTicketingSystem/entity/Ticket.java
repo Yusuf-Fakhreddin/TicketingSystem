@@ -1,5 +1,6 @@
 package com.YusufFakhreddin.ICDTicketingSystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -7,7 +8,7 @@ import lombok.*;
 import java.util.List;
 
 @Entity
-@Table(name = "ticket")
+@Table(name = "tickets")
 @NoArgsConstructor
 @Data
 public class Ticket {
@@ -27,11 +28,15 @@ public class Ticket {
     private String time;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "owner", nullable = false)
+    @JsonIgnore
+    @ToString.Exclude
     private User owner;
 
-    @ManyToOne
-    @JoinColumn(name = "team_id")
+    @ManyToOne(fetch= FetchType.LAZY)
+    @JoinColumn(name = "owner_team_id", nullable = false)
+    @ToString.Exclude
+    @JsonIgnore
     private Team ownerTeam;
     private String assigned_user;
 

@@ -1,6 +1,4 @@
-DROP TABLE IF EXISTS `ticket`;
-
-CREATE TABLE `ticket` (
+CREATE TABLE `tickets` (
   `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `title` VARCHAR(100) NOT NULL,
   `description` VARCHAR(1000) NOT NULL,
@@ -9,16 +7,16 @@ CREATE TABLE `ticket` (
   `type` VARCHAR(255),
   `date` VARCHAR(255),
   `time` VARCHAR(255),
-  `owner_id` VARCHAR(255),
-  `owner_team_id` VARCHAR(255)
-  `assigned_user` VARCHAR(255),
-  `assigned_team` VARCHAR(255),
-  FOREIGN KEY (`owner_id`) REFERENCES `users` (`id`),
-  FOREIGN KEY (`owner_team_id`) REFERENCES `team` (`id`)
+  `owner`  varchar(50) ,
+  `owner_team_id`  int ,
+  `assigned_user`  varchar(50) ,
+  `assigned_team`  varchar(50) ,
+  FOREIGN KEY (`owner`) REFERENCES `users` (`username`),
+  FOREIGN KEY (`owner_team_id`) REFERENCES `teams` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
-INSERT INTO `ticket`
-VALUES
-(1,'This is a title.','This is a description.','Open','High','Task','2022-12-01','10:00:00',1,1,2,2),
-(2,'This is another title.','This is another description.','Open','High','Task','2022-12-02','11:00:00',2,2,3,3),
-(3,'This is a third title.','This is a third description.','Open','High','Task','2022-12-03','12:00:00',3,3,1,1);
+--insert 3 tickets
+INSERT INTO `tickets` (`title`, `description`, `status`, `priority`, `type`, `date`, `time`, `owner`, `owner_team_id`, `assigned_user`, `assigned_team`) VALUES ('Ticket 1', 'This is ticket 1', 'Open', 'High', 'Bug', '2019-12-01', '12:00', 'admin', 1, 'admin', 'admin');
+INSERT INTO `tickets` (`title`, `description`, `status`, `priority`, `type`, `date`, `time`, `owner`, `owner_team_id`, `assigned_user`, `assigned_team`) VALUES ('Ticket 2', 'This is ticket 2', 'Open', 'High', 'Bug', '2019-12-01', '12:00', 'admin', 1, 'admin', 'admin');
+INSERT INTO `tickets` (`title`, `description`, `status`, `priority`, `type`, `date`, `time`, `owner`, `owner_team_id`, `assigned_user`, `assigned_team`) VALUES ('Ticket 3', 'This is ticket 3', 'Open', 'High', 'Bug', '2019-12-01', '12:00', 'admin', 1, 'admin', 'admin');
+

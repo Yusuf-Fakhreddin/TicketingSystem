@@ -23,10 +23,8 @@ public class SecurityConfig {
     public UserDetailsManager userDetailsManager(DataSource dataSource) {
         JdbcUserDetailsManager jdbcUserDetailsManager= new JdbcUserDetailsManager(dataSource);
 
-//      define query to retrieve a user by username
-        jdbcUserDetailsManager.setUsersByUsernameQuery("select user_id, password, active from users where user_id = ?");
-//      define query to retrieve the user authorities by username
-        jdbcUserDetailsManager.setAuthoritiesByUsernameQuery("select user_id, role from roles where user_id = ?");
+        jdbcUserDetailsManager.setUsersByUsernameQuery("select username, password, active from users where username = ?");
+        jdbcUserDetailsManager.setAuthoritiesByUsernameQuery("select username, role from roles where username = ?");
 
 //        return the jdbc user details manager
         return jdbcUserDetailsManager;
@@ -35,10 +33,10 @@ public class SecurityConfig {
 //    create a filter chain to protect and assign roles for endpoints
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(configurer-> configurer.requestMatchers(HttpMethod.GET, "/api/ticket/**").hasRole("EMPLOYEE")
-                .requestMatchers(HttpMethod.POST, "/api/ticket/**").hasRole("EMPLOYEE")
-                .requestMatchers(HttpMethod.PUT, "/api/ticket/**").hasRole("EMPLOYEE")
-                .requestMatchers(HttpMethod.DELETE, "/api/ticket/**").hasRole("ADMIN"));
+        http.authorizeHttpRequests(configurer-> configurer.requestMatchers(HttpMethod.GET, "/api/ticket/**").hasAnyRole("EMPLOYEE", "ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/ticket/**").hasAnyRole("EMPLOYEE", "ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/ticket/**").hasAnyRole("EMPLOYEE", "ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/ticket/**").hasAnyRole("EMPLOYEE", "ADMIN"));
 
 //      use http basic authentication
         http.httpBasic(Customizer.withDefaults());

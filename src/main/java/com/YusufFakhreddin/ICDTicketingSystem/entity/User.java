@@ -19,8 +19,14 @@ public class User {
     private String password;
     @Column(nullable = false)
     private boolean active;
-    @Column(nullable = false)
-    private String role;
+
+//    one to many relationship with team entity (one user can be in one teams) joined by username and team_id
+    @ManyToMany
+    @JoinTable(
+            name = "user_teams",
+            joinColumns = @JoinColumn(name = "username"),
+            inverseJoinColumns = @JoinColumn(name = "team_id"))
+    private Set<Team> teams;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Ticket> tickets;

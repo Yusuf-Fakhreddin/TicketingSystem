@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import java.util.Set;
 
 @Entity
-@Table(name = "team")
+@Table(name = "teams")
 @Data
 @NoArgsConstructor
 public class Team {
@@ -19,12 +19,13 @@ public class Team {
     @Column(name = "name")
     private String Name;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    @OneToMany(mappedBy = "team")
+    @ManyToMany
+    @JoinTable(
+            name = "user_teams",
+            joinColumns = @JoinColumn(name = "team_id"),
+            inverseJoinColumns = @JoinColumn(name = "username"))
     private Set<User> users;
+    
 
     @OneToMany(mappedBy = "ownerTeam")
     private Set<Ticket> tickets;

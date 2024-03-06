@@ -3,7 +3,7 @@ package com.YusufFakhreddin.ICDTicketingSystem.entity;
 import jakarta.persistence.*;
 import lombok.*;
 @Entity
-@Table(name = "comment")
+@Table(name = "comments")
 @NoArgsConstructor
 @Data
 public class Comment {

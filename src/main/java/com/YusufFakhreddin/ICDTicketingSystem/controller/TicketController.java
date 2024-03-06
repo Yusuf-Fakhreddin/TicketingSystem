@@ -58,7 +58,7 @@ public class TicketController {
         User user = userService.findUserByUsername(auth.getName());
 
         ticket.setOwner(user);
-        ticket.setTeam(user.getTeam());
+        ticket.setOwnerTeam(user.getTeam());
         Ticket createdTicket = ticketService.createTicket(ticket);
         return new ApiResopnse<>(HttpStatus.CREATED.value(), "Ticket created successfully", createdTicket);
     }
@@ -106,9 +106,26 @@ public class TicketController {
         return new ApiResopnse<>(HttpStatus.OK.value(), "Tickets retrieved successfully", ticketService.findTicketsByOwnerAndStatusWithoutComments(username, status));
     }
 
-    @GetMapping("/team/{teamName}/status/{status}")
-    public ApiResopnse<List<Ticket>> getTicketsByTeamAndStatus(@PathVariable String teamName, @PathVariable String status) {
-        return new ApiResopnse<>(HttpStatus.OK.value(), "Tickets retrieved successfully", ticketService.findTicketsByTeamAndStatusWithoutComments(teamName, status));
+//    endpoint for logged in user to get their tickets with optional parameter status in the url
+    @GetMapping("/my-tickets")
+    public ApiResopnse<List<Ticket>> getMyTickets(@RequestParam(required = false) String status) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = userService.findUserByUsername(auth.getName());
+        if (status == null) {
+            return new ApiResopnse<>(HttpStatus.OK.value(), "Tickets retrieved successfully", ticketService.getTicketsByOwner(user.getUsername()));
+        }
+        return new ApiResopnse<>(HttpStatus.OK.value(), "Tickets retrieved successfully", ticketService.findTicketsByOwnerAndStatusWithoutComments(user.getUsername(), status));
+    }
+
+//   get logged in user's team tickets
+    @GetMapping("/my-team-tickets")
+    public ApiResopnse<List<Ticket>> getMyTeamTickets(@RequestParam(required = false) String status) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = userService.findUserByUsername(auth.getName());
+        if (status == null) {
+            return new ApiResopnse<>(HttpStatus.OK.value(), "Tickets retrieved successfully", ticketService.getTicketsByTeamWithoutComments(user.getTeam().getName()));
+        }
+        return new ApiResopnse<>(HttpStatus.OK.value(), "Tickets retrieved successfully", ticketService.findTicketsByTeamAndStatusWithoutComments(user.getTeam().getName(), status));
     }
 
 

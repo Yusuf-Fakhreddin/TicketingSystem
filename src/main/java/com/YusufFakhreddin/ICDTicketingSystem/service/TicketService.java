@@ -1,6 +1,7 @@
 package com.YusufFakhreddin.ICDTicketingSystem.service;
 
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Comment;
+import com.YusufFakhreddin.ICDTicketingSystem.entity.Team;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Ticket;
 import java.util.List;
 
@@ -18,5 +19,7 @@ public interface TicketService {
     List<Ticket> findTicketsByOwnerAndStatusWithoutComments(String username, String status);
 
     List<Ticket> findTicketsByTeamAndStatusWithoutComments(String teamName, String status);
+
+    List<Ticket>  getTicketsByTeamWithoutComments(String team);
 }
 
