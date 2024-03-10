@@ -57,15 +57,19 @@ public class TicketServiceImpl implements TicketService{
     }
 
     @Override
-    public TicketDTO updateTicket(String id , Ticket ticket){
+    public TicketDTO updateTicket(String id , TicketDTO ticketDTO){
         // check for id existence and throw custom error if not
         if (ticketRepo.findById(id).orElse(null) == null) {
             throw new CustomException(HttpStatus.NOT_FOUND.value(),"Ticket id not found - " + id);
         }
+        // Convert TicketDTO to Ticket entity
+        Ticket ticket = modelMapperUtil.mapObject(ticketDTO, Ticket.class);
         // append id to ticket object
         ticket.setId(id);
         Ticket updatedTicket = ticketRepo.save(ticket);
-        return modelMapperUtil.mapObject(updatedTicket, TicketDTO.class);
+        // Convert updated Ticket back to TicketDTO
+        TicketDTO updatedTicketDTO = modelMapperUtil.mapObject(updatedTicket, TicketDTO.class);
+        return updatedTicketDTO;
     }
 
     @Override

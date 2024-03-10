@@ -1,6 +1,7 @@
 package com.YusufFakhreddin.ICDTicketingSystem.controller;
 
 import com.YusufFakhreddin.ICDTicketingSystem.ErrorHandling.CustomException;
+import com.YusufFakhreddin.ICDTicketingSystem.dto.ModelMapperUtil;
 import com.YusufFakhreddin.ICDTicketingSystem.dto.TicketDTO;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Comment;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Ticket;
@@ -10,6 +11,7 @@ import com.YusufFakhreddin.ICDTicketingSystem.service.TicketService;
 import com.YusufFakhreddin.ICDTicketingSystem.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -27,7 +29,8 @@ public class TicketController {
 
     private final TicketService ticketService;
     private final UserService userService;
-
+    @Autowired
+    private ModelMapperUtil modelMapperUtil;
 
     @GetMapping
     public ApiResopnse<List<TicketDTO>> getAllTickets() {
@@ -46,7 +49,7 @@ public class TicketController {
     }
 
     @PostMapping
-    public ApiResopnse<?> createTicket(@RequestBody @Validated Ticket ticket, BindingResult bindingResult) {
+    public ApiResopnse<?> createTicket(@RequestBody @Validated TicketDTO ticketDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             Map<String, String> errors = new HashMap<>();
             bindingResult.getFieldErrors().forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
@@ -54,18 +57,24 @@ public class TicketController {
             throw new CustomException(HttpStatus.BAD_REQUEST.value(), "Validation errors occurred", errors);
         }
         System.out.println("Creating ticket");
-        ticket.setId("0");
+
+        // Convert TicketDTO to Ticket entity
+        Ticket ticket = modelMapperUtil.mapObject(ticketDTO, Ticket.class);
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.findUserByUsername(auth.getName());
+
+
 
         ticket.setOwner(user);
         ticket.setOwnerTeam(user.getTeam());
         TicketDTO createdTicket = ticketService.createTicket(ticket);
         return new ApiResopnse<>(HttpStatus.CREATED.value(), "Ticket created successfully", createdTicket);
     }
-    @PutMapping("/{id}")
-    public ApiResopnse<?> updateTicket(@PathVariable String id, @RequestBody @Validated Ticket ticket, BindingResult bindingResult) throws CustomException {
-        System.out.println("Updating ticket");
+
+    @PutMapping("/ownership/{id}")
+    public ApiResopnse<?> updateTicketOwner(@PathVariable String id, @RequestBody @Validated User newOwner, BindingResult bindingResult) throws CustomException {
+        System.out.println("Updating ticket owner");
 
         if (bindingResult.hasErrors()) {
             Map<String, String> errors = new HashMap<>();
@@ -74,10 +83,52 @@ public class TicketController {
             throw new CustomException(HttpStatus.BAD_REQUEST.value(), "Validation errors occurred", errors);
         }
 
-        ticketService.updateTicket(id, ticket);
-//        find ticket updated by id
-        TicketDTO updatedTicket = ticketService.getTicket(id);
-        return new ApiResopnse<>(HttpStatus.OK.value(), "Ticket updated successfully", updatedTicket);
+        // Fetch the existing ticketDTO
+        TicketDTO existingTicketDTO = ticketService.getTicket(id);
+
+        // Convert TicketDTO to Ticket entity
+        Ticket existingTicket = modelMapperUtil.mapObject(existingTicketDTO, Ticket.class);
+
+        // Update the owner property
+        existingTicket.setOwner(newOwner);
+
+        // Convert updated Ticket back to TicketDTO
+        TicketDTO updatedTicketDTO = modelMapperUtil.mapObject(existingTicket, TicketDTO.class);
+
+        // Save the updated ticketDTO
+        ticketService.updateTicket(id, updatedTicketDTO);
+
+        return new ApiResopnse<>(HttpStatus.OK.value(), "Ticket owner updated successfully", updatedTicketDTO);
+    }
+
+
+    @PutMapping("/status/{id}")
+    public ApiResopnse<?> updateTicketStatus(@PathVariable String id, @RequestBody String newStatus, BindingResult bindingResult) throws CustomException {
+        System.out.println("Updating ticket status");
+
+        if (bindingResult.hasErrors()) {
+            Map<String, String> errors = new HashMap<>();
+            bindingResult.getFieldErrors().forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
+            System.out.println(errors.toString());
+            throw new CustomException(HttpStatus.BAD_REQUEST.value(), "Validation errors occurred", errors);
+        }
+
+        // Fetch the existing ticketDTO
+        TicketDTO existingTicketDTO = ticketService.getTicket(id);
+
+        // Convert TicketDTO to Ticket entity
+        Ticket existingTicket = modelMapperUtil.mapObject(existingTicketDTO, Ticket.class);
+
+        // Update the status property
+        existingTicket.setStatus(newStatus);
+
+        // Convert updated Ticket back to TicketDTO
+        TicketDTO updatedTicketDTO = modelMapperUtil.mapObject(existingTicket, TicketDTO.class);
+
+        // Save the updated ticketDTO
+        ticketService.updateTicket(id, updatedTicketDTO);
+
+        return new ApiResopnse<>(HttpStatus.OK.value(), "Ticket status updated successfully", updatedTicketDTO);
     }
 
     @DeleteMapping("/{id}")

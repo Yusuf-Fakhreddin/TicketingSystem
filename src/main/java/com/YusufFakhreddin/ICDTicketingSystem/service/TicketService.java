@@ -10,7 +10,7 @@ public interface TicketService {
     TicketDTO createTicket(Ticket ticket);
     TicketDTO getTicket(String id);
     List<TicketDTO> getAllTickets();
-    TicketDTO updateTicket(String id,Ticket ticket);
+    TicketDTO updateTicket(String id,TicketDTO ticketDTO);
     void deleteTicket(String id);
 
     TicketDTO addCommentToTicket(String id, Comment comment);
