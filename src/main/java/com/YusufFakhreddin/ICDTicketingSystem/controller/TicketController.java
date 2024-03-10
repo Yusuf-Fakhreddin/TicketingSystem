@@ -1,6 +1,7 @@
 package com.YusufFakhreddin.ICDTicketingSystem.controller;
 
 import com.YusufFakhreddin.ICDTicketingSystem.ErrorHandling.CustomException;
+import com.YusufFakhreddin.ICDTicketingSystem.dto.TicketDTO;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Comment;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Ticket;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.User;
@@ -29,18 +30,18 @@ public class TicketController {
 
 
     @GetMapping
-    public ApiResopnse<List<Ticket>> getAllTickets() {
+    public ApiResopnse<List<TicketDTO>> getAllTickets() {
 //        log executing this method
         System.out.println("Getting all tickets");
         return new ApiResopnse<>(HttpStatus.OK.value(), "Tickets retrieved successfully", ticketService.getAllTickets());
     }
 
     @GetMapping("/{id}")
-    public ApiResopnse<Ticket> getTicket(@PathVariable String id) throws CustomException {
+    public ApiResopnse<TicketDTO> getTicket(@PathVariable String id) throws CustomException {
 //        log the id
         System.out.println(id);
 //        get ticket and its comments
-        Ticket ticket = ticketService.getTicket(id);
+        TicketDTO ticket = ticketService.getTicket(id);
         return new ApiResopnse<>(HttpStatus.OK.value(), "Ticket retrieved successfully", ticket);
     }
 
@@ -59,7 +60,7 @@ public class TicketController {
 
         ticket.setOwner(user);
         ticket.setOwnerTeam(user.getTeam());
-        Ticket createdTicket = ticketService.createTicket(ticket);
+        TicketDTO createdTicket = ticketService.createTicket(ticket);
         return new ApiResopnse<>(HttpStatus.CREATED.value(), "Ticket created successfully", createdTicket);
     }
     @PutMapping("/{id}")
@@ -75,7 +76,7 @@ public class TicketController {
 
         ticketService.updateTicket(id, ticket);
 //        find ticket updated by id
-        Ticket updatedTicket = ticketService.getTicket(id);
+        TicketDTO updatedTicket = ticketService.getTicket(id);
         return new ApiResopnse<>(HttpStatus.OK.value(), "Ticket updated successfully", updatedTicket);
     }
 
@@ -92,23 +93,23 @@ public class TicketController {
     @PostMapping("/{id}/comments")
     @Transactional
     public ApiResopnse<?> addCommentToTicket(@PathVariable String id, @RequestBody Comment comment) {
-        Ticket ticket= ticketService.addCommentToTicket(id, comment);
+        TicketDTO ticket= ticketService.addCommentToTicket(id, comment);
         return new ApiResopnse<>(HttpStatus.OK.value(), "Comment added successfully", ticket);
     }
 
     @GetMapping("/owner/{username}")
-    public ApiResopnse<List<Ticket>> getTicketsByOwner(@PathVariable String username) {
+    public ApiResopnse<List<TicketDTO>> getTicketsByOwner(@PathVariable String username) {
         return new ApiResopnse<>(HttpStatus.OK.value(), "Tickets retrieved successfully", ticketService.getTicketsByOwner(username));
     }
 
     @GetMapping("/owner/{username}/status/{status}")
-    public ApiResopnse<List<Ticket>> getTicketsByOwnerAndStatus(@PathVariable String username, @PathVariable String status) {
+    public ApiResopnse<List<TicketDTO>> getTicketsByOwnerAndStatus(@PathVariable String username, @PathVariable String status) {
         return new ApiResopnse<>(HttpStatus.OK.value(), "Tickets retrieved successfully", ticketService.findTicketsByOwnerAndStatusWithoutComments(username, status));
     }
 
 //    endpoint for logged in user to get their tickets with optional parameter status in the url
     @GetMapping("/my-tickets")
-    public ApiResopnse<List<Ticket>> getMyTickets(@RequestParam(required = false) String status) {
+    public ApiResopnse<List<TicketDTO>> getMyTickets(@RequestParam(required = false) String status) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.findUserByUsername(auth.getName());
         if (status == null) {
@@ -119,7 +120,7 @@ public class TicketController {
 
 //   get logged in user's team tickets
     @GetMapping("/my-team-tickets")
-    public ApiResopnse<List<Ticket>> getMyTeamTickets(@RequestParam(required = false) String status) {
+    public ApiResopnse<List<TicketDTO>> getMyTeamTickets(@RequestParam(required = false) String status) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.findUserByUsername(auth.getName());
         if (status == null) {

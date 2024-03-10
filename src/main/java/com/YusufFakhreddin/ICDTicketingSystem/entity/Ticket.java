@@ -1,6 +1,9 @@
 package com.YusufFakhreddin.ICDTicketingSystem.entity;
 
+import ch.qos.logback.core.net.SMTPAppenderBase;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -29,14 +32,12 @@ public class Ticket {
 
     @ManyToOne
     @JoinColumn(name = "owner", nullable = false)
-    @JsonIgnore
-    @ToString.Exclude
+@JsonManagedReference
     private User owner;
 
     @ManyToOne(fetch= FetchType.LAZY)
     @JoinColumn(name = "owner_team_id", nullable = false)
-    @ToString.Exclude
-    @JsonIgnore
+    @JsonBackReference
     private Team ownerTeam;
     private String assigned_user;
 
@@ -71,6 +72,5 @@ public class Ticket {
                 ", comments=" + comments +
                 '}';
     }
-
 
 }

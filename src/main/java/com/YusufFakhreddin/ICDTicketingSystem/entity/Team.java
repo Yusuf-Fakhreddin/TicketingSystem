@@ -1,5 +1,6 @@
 package com.YusufFakhreddin.ICDTicketingSystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,6 +29,7 @@ public class Team {
     
 
     @OneToMany(mappedBy = "ownerTeam")
+    @JsonManagedReference
     private Set<Ticket> tickets;
 
 }

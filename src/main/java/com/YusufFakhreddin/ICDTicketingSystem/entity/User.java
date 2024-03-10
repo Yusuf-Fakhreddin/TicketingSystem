@@ -1,5 +1,6 @@
 package com.YusufFakhreddin.ICDTicketingSystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,6 +30,7 @@ public class User {
     private Set<Team> teams;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonBackReference
     private List<Ticket> tickets;
 
     @ManyToOne
