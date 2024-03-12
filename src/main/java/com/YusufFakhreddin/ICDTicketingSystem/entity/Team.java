@@ -1,5 +1,6 @@
 package com.YusufFakhreddin.ICDTicketingSystem.entity;
 
+import com.YusufFakhreddin.ICDTicketingSystem.enums.TeamName;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -18,7 +19,8 @@ public class Team {
     private String id;
 
     @Column(name = "name")
-    private String Name;
+    @Enumerated(EnumType.STRING)
+    private TeamName Name;
 
     @ManyToMany
     @JoinTable(

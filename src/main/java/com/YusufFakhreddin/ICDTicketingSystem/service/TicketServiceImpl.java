@@ -8,6 +8,8 @@ import com.YusufFakhreddin.ICDTicketingSystem.dto.TicketDTO;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Comment;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Team;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Ticket;
+import com.YusufFakhreddin.ICDTicketingSystem.enums.TeamName;
+import com.YusufFakhreddin.ICDTicketingSystem.enums.TicketStatus;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,7 +103,7 @@ public class TicketServiceImpl implements TicketService{
     }
 
     @Override
-    public List<TicketDTO> findTicketsByOwnerAndStatusWithoutComments(String username, String status) {
+    public List<TicketDTO> findTicketsByOwnerAndStatusWithoutComments(String username, TicketStatus status) {
         List<Ticket> tickets=  ticketRepo.findTicketsByOwnerAndStatusWithoutComments(username, status);
         return tickets.stream()
                 .map(ticket -> modelMapperUtil.mapObject(ticket, TicketDTO.class))
@@ -109,7 +111,7 @@ public class TicketServiceImpl implements TicketService{
     }
 
     @Override
-    public List<TicketDTO> findTicketsByTeamAndStatusWithoutComments(String teamName, String status) {
+    public List<TicketDTO> findTicketsByTeamAndStatusWithoutComments(TeamName teamName, TicketStatus status) {
         List<Ticket> tickets=  ticketRepo.findTicketsByTeamAndStatusWithoutComments(teamName, status);
         return tickets.stream()
                 .map(ticket -> modelMapperUtil.mapObject(ticket, TicketDTO.class))
@@ -118,14 +120,14 @@ public class TicketServiceImpl implements TicketService{
 
 
     @Override
-    public List<TicketDTO> getTicketsByTeamWithoutComments(String team) {
+    public List<TicketDTO> getTicketsByTeamWithoutComments(TeamName team) {
         List<Ticket> tickets=  ticketRepo.findTicketsByTeamWithoutComments(team);
         return tickets.stream()
                 .map(ticket -> modelMapperUtil.mapObject(ticket, TicketDTO.class))
                 .collect(Collectors.toList());
     }
 
-    public List<TicketDTO> getTicketsByOwnerAndStatus(String username, String status){
+    public List<TicketDTO> getTicketsByOwnerAndStatus(String username, TicketStatus status){
         List<Ticket> tickets= ticketRepo.findTicketsByOwnerAndStatusWithoutComments(username, status);
         return tickets.stream()
                 .map(ticket -> modelMapperUtil.mapObject(ticket, TicketDTO.class))
@@ -133,7 +135,7 @@ public class TicketServiceImpl implements TicketService{
     }
 
 
-    public List<TicketDTO> getTicketsByTeamAndStatus(String teamName, String status){
+    public List<TicketDTO> getTicketsByTeamAndStatus(TeamName teamName, TicketStatus status){
         List<Ticket> tickets= ticketRepo.findTicketsByTeamAndStatusWithoutComments(teamName, status);
         return tickets.stream()
                 .map(ticket -> modelMapperUtil.mapObject(ticket, TicketDTO.class))

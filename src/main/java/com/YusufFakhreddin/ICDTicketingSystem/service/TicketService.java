@@ -4,6 +4,9 @@ import com.YusufFakhreddin.ICDTicketingSystem.dto.TicketDTO;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Comment;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Team;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Ticket;
+import com.YusufFakhreddin.ICDTicketingSystem.enums.TeamName;
+import com.YusufFakhreddin.ICDTicketingSystem.enums.TicketStatus;
+
 import java.util.List;
 
 public interface TicketService {
@@ -17,10 +20,10 @@ public interface TicketService {
 
     List<TicketDTO> getTicketsByOwner(String username);
 
-    List<TicketDTO> findTicketsByOwnerAndStatusWithoutComments(String username, String status);
+    List<TicketDTO> findTicketsByOwnerAndStatusWithoutComments(String username, TicketStatus status);
 
-    List<TicketDTO> findTicketsByTeamAndStatusWithoutComments(String teamName, String status);
+    List<TicketDTO> findTicketsByTeamAndStatusWithoutComments(TeamName teamName, TicketStatus status);
 
-    List<TicketDTO>  getTicketsByTeamWithoutComments(String team);
+    List<TicketDTO>  getTicketsByTeamWithoutComments(TeamName team);
 }
 

@@ -1,6 +1,9 @@
 package com.YusufFakhreddin.ICDTicketingSystem.entity;
 
 import ch.qos.logback.core.net.SMTPAppenderBase;
+import com.YusufFakhreddin.ICDTicketingSystem.enums.TicketPriority;
+import com.YusufFakhreddin.ICDTicketingSystem.enums.TicketStatus;
+import com.YusufFakhreddin.ICDTicketingSystem.enums.TicketType;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -18,15 +21,24 @@ public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
+
     @Column(name = "title", nullable = false)
     @Size(min = 5,max=100, message = "title must be between 5 and 100 characters")
     private String title;
+
     @Column(name = "description", nullable = false)
     @Size(min = 5,max=1000, message = "description must be between 5 and 1000 characters")
     private String description;
-    private String status;
-    private String priority;
-    private String type;
+
+    @Enumerated(EnumType.STRING)
+    private TicketStatus status;
+
+    @Enumerated(EnumType.STRING)
+    private TicketPriority priority;
+
+    @Enumerated(EnumType.STRING)
+    private TicketType type;
+
     private String date;
     private String time;
 

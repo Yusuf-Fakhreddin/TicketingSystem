@@ -1,5 +1,7 @@
 package com.YusufFakhreddin.ICDTicketingSystem.dao;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Ticket;
+import com.YusufFakhreddin.ICDTicketingSystem.enums.TeamName;
+import com.YusufFakhreddin.ICDTicketingSystem.enums.TicketStatus;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -20,13 +22,13 @@ public interface TicketRepo extends JpaRepository<Ticket, String> {
 
 //    query to get tickets by owner and status without comments
     @Query("SELECT t FROM Ticket t WHERE t.owner.username = ?1 AND t.status = ?2")
-    List<Ticket> findTicketsByOwnerAndStatusWithoutComments(String username, String status);
+    List<Ticket> findTicketsByOwnerAndStatusWithoutComments(String username, TicketStatus status);
 
 //    query to get tickets by assigned team and status without comments
     @Query("SELECT t FROM Ticket t WHERE t.assigned_team = ?1 AND t.status = ?2")
-    List<Ticket> findTicketsByTeamAndStatusWithoutComments(String teamName, String status);
+    List<Ticket> findTicketsByTeamAndStatusWithoutComments(TeamName teamName, TicketStatus status);
 
 //    query to get tickets by assigned team without comments
 @Query("SELECT t FROM Ticket t WHERE t.assigned_team = ?1")
-List<Ticket> findTicketsByTeamWithoutComments(String team);
+List<Ticket> findTicketsByTeamWithoutComments(TeamName team);
 }

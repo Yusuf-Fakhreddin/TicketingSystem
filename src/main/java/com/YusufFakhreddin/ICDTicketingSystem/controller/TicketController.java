@@ -6,6 +6,7 @@ import com.YusufFakhreddin.ICDTicketingSystem.dto.TicketDTO;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Comment;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Ticket;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.User;
+import com.YusufFakhreddin.ICDTicketingSystem.enums.TicketStatus;
 import com.YusufFakhreddin.ICDTicketingSystem.response.ApiResopnse;
 import com.YusufFakhreddin.ICDTicketingSystem.service.TicketService;
 import com.YusufFakhreddin.ICDTicketingSystem.service.UserService;
@@ -103,7 +104,7 @@ public class TicketController {
 
 
     @PutMapping("/status/{id}")
-    public ApiResopnse<?> updateTicketStatus(@PathVariable String id, @RequestBody String newStatus, BindingResult bindingResult) throws CustomException {
+    public ApiResopnse<?> updateTicketStatus(@PathVariable String id, @RequestBody TicketStatus newStatus, BindingResult bindingResult) throws CustomException {
         System.out.println("Updating ticket status");
 
         if (bindingResult.hasErrors()) {
@@ -154,13 +155,13 @@ public class TicketController {
     }
 
     @GetMapping("/owner/{username}/status/{status}")
-    public ApiResopnse<List<TicketDTO>> getTicketsByOwnerAndStatus(@PathVariable String username, @PathVariable String status) {
+    public ApiResopnse<List<TicketDTO>> getTicketsByOwnerAndStatus(@PathVariable String username, @PathVariable TicketStatus status) {
         return new ApiResopnse<>(HttpStatus.OK.value(), "Tickets retrieved successfully", ticketService.findTicketsByOwnerAndStatusWithoutComments(username, status));
     }
 
 //    endpoint for logged in user to get their tickets with optional parameter status in the url
     @GetMapping("/my-tickets")
-    public ApiResopnse<List<TicketDTO>> getMyTickets(@RequestParam(required = false) String status) {
+    public ApiResopnse<List<TicketDTO>> getMyTickets(@RequestParam(required = false) TicketStatus status) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.findUserByUsername(auth.getName());
         if (status == null) {
@@ -171,7 +172,7 @@ public class TicketController {
 
 //   get logged in user's team tickets
     @GetMapping("/my-team-tickets")
-    public ApiResopnse<List<TicketDTO>> getMyTeamTickets(@RequestParam(required = false) String status) {
+    public ApiResopnse<List<TicketDTO>> getMyTeamTickets(@RequestParam(required = false) TicketStatus status) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.findUserByUsername(auth.getName());
         if (status == null) {
