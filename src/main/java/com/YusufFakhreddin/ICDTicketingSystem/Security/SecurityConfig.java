@@ -36,7 +36,12 @@ public class SecurityConfig {
         http.authorizeHttpRequests(configurer-> configurer.requestMatchers(HttpMethod.GET, "/api/ticket/**").hasAnyRole("EMPLOYEE", "ADMIN")
                 .requestMatchers(HttpMethod.POST, "/api/ticket/**").hasAnyRole("EMPLOYEE", "ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/ticket/**").hasAnyRole("EMPLOYEE", "ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/ticket/**").hasAnyRole("EMPLOYEE", "ADMIN"));
+                .requestMatchers(HttpMethod.DELETE, "/api/ticket/**").hasAnyRole("EMPLOYEE", "ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/user/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/user/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/user/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/user/**").hasRole("ADMIN"));
+
 
 //      use http basic authentication
         http.httpBasic(Customizer.withDefaults());
