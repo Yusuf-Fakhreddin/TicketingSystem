@@ -1,24 +1,25 @@
 package com.YusufFakhreddin.ICDTicketingSystem.service;
 
 import com.YusufFakhreddin.ICDTicketingSystem.dao.UserRepo;
+import com.YusufFakhreddin.ICDTicketingSystem.dto.UserDTO;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
-@Service
-@RequiredArgsConstructor
-public class UserService {
-    private final UserRepo userRepo;
 
-    public User findUserByUsername(String username) {
-        Optional<User> user = userRepo.findByUsername(username);
-        return user.orElse(null);
-    }
+public interface UserService {
 
-    public User findUserById(String id) {
-        Optional<User> user = userRepo.findById(id);
-        return user.orElse(null);
-    }
+    UserDTO createUser(UserDTO userDTO);
+    UserDTO getUser(String id);
+    List<UserDTO> getAllUsers();
+    UserDTO updateUser(String id, UserDTO userDTO);
+    void deleteUser(String id);
+
+    User findUserByUsername(String username);
+    User findUserById(String id);
+
+    List<UserDTO> searchUsers(String query);
 }
