@@ -142,5 +142,17 @@ public class TicketServiceImpl implements TicketService{
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public TicketDTO resolveTicket(String id, String resolution) {
+        Ticket ticket = ticketRepo.findById(id).orElse(null);
+        if (ticket == null) {
+            throw new CustomException(HttpStatus.NOT_FOUND.value(),"Ticket id not found - " + id);
+        }
+        ticket.setStatus(TicketStatus.RESOLVED);
+        ticket.setResolution(resolution);
+        Ticket updatedTicket = ticketRepo.save(ticket);
+        return modelMapperUtil.mapObject(updatedTicket, TicketDTO.class);
+    }
+
 
 }

@@ -25,5 +25,7 @@ public interface TicketService {
     List<TicketDTO> findTicketsByTeamAndStatusWithoutComments(TeamName teamName, TicketStatus status);
 
     List<TicketDTO>  getTicketsByTeamWithoutComments(TeamName team);
+
+    TicketDTO resolveTicket(String id, String resolution);
 }
 

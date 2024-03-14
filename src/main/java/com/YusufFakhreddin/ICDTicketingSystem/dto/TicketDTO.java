@@ -19,6 +19,7 @@ public class TicketDTO {
     private String title;
     @Size(min = 5,max=1000, message = "description must be between 5 and 1000 characters")
     private String description;
+    private String resolution;
     private TicketStatus status;
     private TicketPriority priority;
     private TicketType type;

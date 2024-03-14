@@ -30,6 +30,9 @@ public class Ticket {
     @Size(min = 5,max=1000, message = "description must be between 5 and 1000 characters")
     private String description;
 
+    @Column(name = "resolution")
+    private String resolution;
+
     @Enumerated(EnumType.STRING)
     private TicketStatus status;
 

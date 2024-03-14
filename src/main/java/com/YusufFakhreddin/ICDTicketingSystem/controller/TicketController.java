@@ -19,6 +19,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -160,27 +162,29 @@ public class TicketController {
     }
 
 //    endpoint for logged in user to get their tickets with optional parameter status in the url
-    @GetMapping("/my-tickets")
-    public ApiResopnse<List<TicketDTO>> getMyTickets(@RequestParam(required = false) TicketStatus status) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = userService.findUserByUsername(auth.getName());
+//    @GetMapping("/my-tickets")
+//    public ApiResopnse<List<TicketDTO>> getMyTickets(@RequestParam(required = false) TicketStatus status) {
+//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//        User user = userService.findUserByUsername(auth.getName());
+//        if (status == null) {
+//            return new ApiResopnse<>(HttpStatus.OK.value(), "Tickets retrieved successfully", ticketService.getTicketsByOwner(user.getUsername()));
+//        }
+//        return new ApiResopnse<>(HttpStatus.OK.value(), "Tickets retrieved successfully", ticketService.findTicketsByOwnerAndStatusWithoutComments(user.getUsername(), status));
+//    }
+@GetMapping("/my-tickets")
+    public ApiResopnse<List<TicketDTO>> getMyTickets(@RequestParam(required = false) TicketStatus status, Principal principal) {
+        User user = userService.findUserByUsername(principal.getName());
         if (status == null) {
             return new ApiResopnse<>(HttpStatus.OK.value(), "Tickets retrieved successfully", ticketService.getTicketsByOwner(user.getUsername()));
         }
         return new ApiResopnse<>(HttpStatus.OK.value(), "Tickets retrieved successfully", ticketService.findTicketsByOwnerAndStatusWithoutComments(user.getUsername(), status));
     }
 
-//   get logged in user's team tickets
-    @GetMapping("/my-team-tickets")
-    public ApiResopnse<List<TicketDTO>> getMyTeamTickets(@RequestParam(required = false) TicketStatus status) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = userService.findUserByUsername(auth.getName());
-        if (status == null) {
-            return new ApiResopnse<>(HttpStatus.OK.value(), "Tickets retrieved successfully", ticketService.getTicketsByTeamWithoutComments(user.getTeam().getName()));
-        }
-        return new ApiResopnse<>(HttpStatus.OK.value(), "Tickets retrieved successfully", ticketService.findTicketsByTeamAndStatusWithoutComments(user.getTeam().getName(), status));
-    }
 
+    @PutMapping("/resolve/{id}")
+    public ApiResopnse<TicketDTO> resolveTicket(@PathVariable String id, @RequestBody String resolution) {
+        return new ApiResopnse<>(HttpStatus.OK.value(), "Ticket resolved successfully", ticketService.resolveTicket(id, resolution));
+    }
 
 
 }
