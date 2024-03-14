@@ -2,13 +2,6 @@
 DROP TABLE IF EXISTS `comment`;
 DROP TABLE IF EXISTS `tickets`;
 DROP TABLE IF EXISTS `roles`;
-DROP TABLE IF EXISTS `users`;
-DROP TABLE IF EXISTS `Team`;
-
--- Drop the existing tables
-DROP TABLE IF EXISTS `comment`;
-DROP TABLE IF EXISTS `tickets`;
-DROP TABLE IF EXISTS `roles`;
 DROP TABLE IF EXISTS `user_teams`;
 DROP TABLE IF EXISTS `users`;
 DROP TABLE IF EXISTS `teams`;
@@ -16,7 +9,7 @@ DROP TABLE IF EXISTS `teams`;
 -- Create a new Team table
 CREATE TABLE `teams` (
     id INT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL
+    `name` VARCHAR(255) NOT NULL
     -- Add other columns as needed
 );
 
@@ -41,23 +34,6 @@ VALUES
 ('john','{noop}fun123',1),
 ('mary','{noop}fun123',1),
 ('susan','{noop}fun123',1);
-
--- Create a new User_Teams table
-CREATE TABLE `user_teams` (
-  `username` varchar(50) NOT NULL,
-  `team_id` int(11) NOT NULL,
-  PRIMARY KEY (`username`, `team_id`),
-  FOREIGN KEY (`username`) REFERENCES `users` (`username`),
-  FOREIGN KEY (`team_id`) REFERENCES `teams` (`id`)
-);
-
--- Insert data into the User_Teams table
-INSERT INTO `user_teams`
-VALUES
-('john',1),
-('mary',2),
-('susan',3),
-('susan',4);
 
 -- Create a new Roles table
 CREATE TABLE `roles` (
@@ -97,9 +73,9 @@ CREATE TABLE `tickets` (
 );
 
 -- Insert data into the Tickets table
-INSERT INTO `tickets` (title, description, status, priority, type, date, time, resolution, owner, owner_team_id, assigned_user, assigned_team) VALUES ('This is a title', 'This is a description', 'OPEN', 'HIGH', 'BUG', '2022-12-01', '10:00:00', 'This is a resolution', 'John Doe', 1, 'Jane Doe', 'DEVELOPMENT');
-INSERT INTO `tickets` (title, description, status, priority, type, date, time, resolution, owner, owner_team_id, assigned_user, assigned_team) VALUES ('This is another title', 'This is another description', 'CLOSED', 'LOW', 'FEATURE', '2022-12-02', '11:00:00', 'This is another resolution', 'Jane Doe', 2, 'John Doe', 'DEVOPS');
-INSERT INTO `tickets` (title, description, status, priority, type, date, time, resolution, owner, owner_team_id, assigned_user, assigned_team) VALUES ('This is a third title', 'This is a third description', 'IN PROGRESS', 'MEDIUM', 'ENHANCEMENT', '2022-12-03', '12:00:00', 'This is a third resolution', 'John Doe', 3, 'Jane Doe', 'QA');
+INSERT INTO `tickets` (title, description, status, priority, type, date, time, resolution, owner, owner_team_id, assigned_user, assigned_team) VALUES ('This is a title', 'This is a description', 'QUEUED', 'HIGH', 'BUG', '2022-12-01', '10:00:00', 'This is a resolution', 'john', 1, 'John Doe', 'DEVELOPMENT');
+INSERT INTO `tickets` (title, description, status, priority, type, date, time, resolution, owner, owner_team_id, assigned_user, assigned_team) VALUES ('This is another title', 'This is another description', 'CLOSED', 'NORMAL', 'NEW_FEATURE', '2022-12-02', '11:00:00', 'This is another resolution', 'susan', 2, 'John Doe', 'DEVOPS');
+INSERT INTO `tickets` (title, description, status, priority, type, date, time, resolution, owner, owner_team_id, assigned_user, assigned_team) VALUES ('This is a third title', 'This is a third description', 'IN_PROGRESS', 'URGENT', 'ENHANCEMENT', '2022-12-03', '12:00:00', 'This is a third resolution', 'mary', 3, 'Jane Doe', 'QA');
 
 -- Create a new Comment table
 CREATE TABLE `comment` (
