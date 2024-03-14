@@ -5,6 +5,7 @@ import com.YusufFakhreddin.ICDTicketingSystem.dao.CommentRepo;
 import com.YusufFakhreddin.ICDTicketingSystem.dao.TicketRepo;
 import com.YusufFakhreddin.ICDTicketingSystem.dto.ModelMapperUtil;
 import com.YusufFakhreddin.ICDTicketingSystem.dto.TicketDTO;
+import com.YusufFakhreddin.ICDTicketingSystem.dto.TicketResolutionDTO;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Comment;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Team;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Ticket;
@@ -143,13 +144,13 @@ public class TicketServiceImpl implements TicketService{
     }
 
     @Override
-    public TicketDTO resolveTicket(String id, String resolution) {
+    public TicketDTO resolveTicket(String id, TicketResolutionDTO TicketResolution) {
         Ticket ticket = ticketRepo.findById(id).orElse(null);
         if (ticket == null) {
             throw new CustomException(HttpStatus.NOT_FOUND.value(),"Ticket id not found - " + id);
         }
-        ticket.setStatus(TicketStatus.RESOLVED);
-        ticket.setResolution(resolution);
+        ticket.setStatus(TicketResolution.getStatus());
+        ticket.setResolution(TicketResolution.getResolution());
         Ticket updatedTicket = ticketRepo.save(ticket);
         return modelMapperUtil.mapObject(updatedTicket, TicketDTO.class);
     }

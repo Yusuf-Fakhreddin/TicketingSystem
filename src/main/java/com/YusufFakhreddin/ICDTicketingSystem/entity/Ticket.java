@@ -50,7 +50,8 @@ public class Ticket {
 @JsonManagedReference
     private User owner;
 
-    @ManyToOne(fetch= FetchType.LAZY)
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_team_id", nullable = false)
     @JsonBackReference
     private Team ownerTeam;

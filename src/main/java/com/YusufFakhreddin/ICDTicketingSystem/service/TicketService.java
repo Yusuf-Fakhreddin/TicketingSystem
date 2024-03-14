@@ -1,6 +1,7 @@
 package com.YusufFakhreddin.ICDTicketingSystem.service;
 
 import com.YusufFakhreddin.ICDTicketingSystem.dto.TicketDTO;
+import com.YusufFakhreddin.ICDTicketingSystem.dto.TicketResolutionDTO;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Comment;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Team;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Ticket;
@@ -26,6 +27,8 @@ public interface TicketService {
 
     List<TicketDTO>  getTicketsByTeamWithoutComments(TeamName team);
 
-    TicketDTO resolveTicket(String id, String resolution);
+    //   resolve ticket by id and resolution string
+
+    TicketDTO resolveTicket(String id, TicketResolutionDTO TicketResolution);
 }
 

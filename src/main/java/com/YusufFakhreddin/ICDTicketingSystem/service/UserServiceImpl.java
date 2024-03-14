@@ -5,12 +5,15 @@ import com.YusufFakhreddin.ICDTicketingSystem.dao.UserRepo;
 import com.YusufFakhreddin.ICDTicketingSystem.dto.ModelMapperUtil;
 import com.YusufFakhreddin.ICDTicketingSystem.dto.UserDTO;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.User;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService{
 
@@ -57,6 +60,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    @Transactional
     public void deleteUser(String username) {
         User user = userRepo.findByUsername(username).orElse(null);
         if (user == null) {

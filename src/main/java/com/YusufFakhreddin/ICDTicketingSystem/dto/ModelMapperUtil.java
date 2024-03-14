@@ -36,7 +36,7 @@ public class ModelMapperUtil {
                 map().setDate(source.getDate());
                 map().setTime(source.getTime());
                 map().setOwner(source.getOwner().getUsername());
-                map().setOwnerTeam(source.getOwner().getTeam().getName());
+                map().setOwnerTeam(source.getOwnerTeam().getName());
                 map().setAssigned_user(source.getAssigned_user());
                 map().setAssigned_team(source.getAssigned_team());
                 // Add more mappings as needed

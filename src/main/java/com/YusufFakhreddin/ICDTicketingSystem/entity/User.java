@@ -33,7 +33,4 @@ public class User {
     @JsonBackReference
     private List<Ticket> tickets;
 
-    @ManyToOne
-    @JoinColumn(name = "team_id")
-    private Team team;
 }
