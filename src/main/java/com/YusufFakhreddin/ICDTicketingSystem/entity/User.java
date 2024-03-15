@@ -33,4 +33,10 @@ public class User {
     @JsonBackReference
     private List<Ticket> tickets;
 
+    @OneToMany(mappedBy = "author")
+    private List<Comment> comments;
+
+    @OneToMany(mappedBy = "assignedUser")
+    private List<Ticket> assignedTickets;
+
 }

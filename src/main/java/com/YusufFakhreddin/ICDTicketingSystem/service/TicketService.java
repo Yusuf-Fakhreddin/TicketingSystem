@@ -23,10 +23,6 @@ public interface TicketService {
 
     List<TicketDTO> findTicketsByOwnerAndStatusWithoutComments(String username, TicketStatus status);
 
-    List<TicketDTO> findTicketsByTeamAndStatusWithoutComments(TeamName teamName, TicketStatus status);
-
-    List<TicketDTO>  getTicketsByTeamWithoutComments(TeamName team);
-
     //   resolve ticket by id and resolution string
 
     TicketDTO resolveTicket(String id, TicketResolutionDTO TicketResolution);

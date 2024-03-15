@@ -1,9 +1,4 @@
--- Purpose: Create a table for tickets
--- Create a sql script to drop table and recreate it and insert data based on my ticket entity
--- Drop the existing tickets table
-DROP TABLE IF EXISTS tickets;
--- Create a new tickets table
-CREATE TABLE tickets (
+CREATE TABLE `tickets` (
     id INT NOT NULL AUTO_INCREMENT,
     title VARCHAR(255) NOT NULL,
     description VARCHAR(255) NOT NULL,
@@ -18,9 +13,11 @@ CREATE TABLE tickets (
     assigned_user VARCHAR(255) NOT NULL,
     assigned_team VARCHAR(255) NOT NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (owner_team_id) REFERENCES Team(id)
+    FOREIGN KEY (owner_team_id) REFERENCES `teams`(id),
+    FOREIGN KEY (assigned_user) REFERENCES users(username),
+    FOREIGN KEY (assigned_team) REFERENCES teams(id)
+)ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
---insert 3 tickets using my enum values
-INSERT INTO tickets (title, description, status, priority, type, date, time, resolution, owner, owner_team_id, assigned_user, assigned_team) VALUES ('This is a title', 'This is a description', 'OPEN', 'HIGH', 'BUG', '2022-12-01', '10:00:00', 'This is a resolution', 'John Doe', 1, 'Jane Doe', 'DEVELOPMENT');
-INSERT INTO tickets (title, description, status, priority, type, date, time, resolution, owner, owner_team_id, assigned_user, assigned_team) VALUES ('This is another title', 'This is another description', 'CLOSED', 'LOW', 'FEATURE', '2022-12-02', '11:00:00', 'This is another resolution', 'Jane Doe', 2, 'John Doe', 'DEVOPS');
-INSERT INTO tickets (title, description, status, priority, type, date, time, resolution, owner, owner_team_id, assigned_user, assigned_team) VALUES ('This is a third title', 'This is a third description', 'IN PROGRESS', 'MEDIUM', 'ENHANCEMENT', '2022-12-03', '12:00:00', 'This is a third resolution', 'John Doe', 3, 'Jane Doe', 'QA');
+INSERT INTO tickets (title, description, status, priority, type, date, time, owner, owner_team_id, assigned_user, assigned_team) VALUES ('This is a title', 'This is a description', 'QUEUED', 'NORMAL', 'ENHANCEMENT', '2020-12-12', '12:00', 'john', 1, 'susan', 2);
+INSERT INTO tickets (title, description, status, priority, type, date, time, owner, owner_team_id, assigned_user, assigned_team) VALUES ('This is another title', 'This is another description', 'IN_PROGRESS', 'HIGH', 'ENHANCEMENT', '2020-12-12', '12:00', 'susan', 1, 'john', 2);
+INSERT INTO tickets (title, description, status, priority, type, date, time, owner, owner_team_id, assigned_user, assigned_team) VALUES ('This is a third title', 'This is a third description', 'QUEUED', 'HIGH', 'BUG', '2020-12-12', '12:00', 'susan', 1, 'john', 2);

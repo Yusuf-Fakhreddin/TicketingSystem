@@ -55,10 +55,15 @@ public class Ticket {
     @JoinColumn(name = "owner_team_id", nullable = false)
     @JsonBackReference
     private Team ownerTeam;
-    private String assigned_user;
+
+    @ManyToOne
+    @JoinColumn(name = "assigned_user", referencedColumnName = "username")
+    private User assignedUser;
 
 
-    private String assigned_team;
+    @ManyToOne
+    @JoinColumn(name = "assigned_team_id", referencedColumnName = "id")
+    private Team assignedTeam;
 
     // link to comment
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
@@ -83,8 +88,9 @@ public class Ticket {
                 ", date='" + date + '\'' +
                 ", time='" + time + '\'' +
                 ", owner='" + owner + '\'' +
-                ", assigned_user='" + assigned_user + '\'' +
-                ", assigned_team='" + assigned_team + '\'' +
+                ", ownerTeam='" + ownerTeam + '\'' +
+                ", assignedUser='" + assignedUser + '\'' +
+                ", assignedTeam='" + assignedTeam + '\'' +
                 ", comments=" + comments +
                 '}';
     }

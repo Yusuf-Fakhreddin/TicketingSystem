@@ -87,10 +87,11 @@ public class TicketController {
 
     @PostMapping("/{id}/comments")
     @Transactional
-    public ApiResopnse<?> addCommentToTicket(@PathVariable String id, @RequestBody CommentDTO comment) {
+    public ApiResopnse<?> addCommentToTicket(@PathVariable String id, @RequestBody CommentDTO comment,Principal principal) {
         System.out.println("Adding comment to ticket");
 //        Create a new comment object to set the date and time
-        Comment newComment = new Comment(comment.getTicket_id(), comment.getComment());
+        User loggedInUser = userService.findUserByUsername(principal.getName());
+        Comment newComment = new Comment(comment.getTicket_id(), comment.getComment(), loggedInUser);
         TicketDTO ticket= ticketService.addCommentToTicket(id, newComment);
         return new ApiResopnse<>(HttpStatus.OK.value(), "Comment added successfully", ticket);
     }

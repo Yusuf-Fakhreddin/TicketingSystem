@@ -27,8 +27,8 @@ public class TicketDTO {
     private String time;
     private String owner;
     private TeamName ownerTeam;
-    private String assigned_user;
-    private String assigned_team;
+    private String assignedUser;
+    private TeamName assignedTeam;
     private String comments;
 
 

@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -22,16 +23,15 @@ public class Team {
     @Enumerated(EnumType.STRING)
     private TeamName Name;
 
-    @ManyToMany
-    @JoinTable(
-            name = "user_teams",
-            joinColumns = @JoinColumn(name = "team_id"),
-            inverseJoinColumns = @JoinColumn(name = "username"))
+    @ManyToMany(mappedBy = "teams")
     private Set<User> users;
     
 
     @OneToMany(mappedBy = "ownerTeam")
     @JsonManagedReference
     private Set<Ticket> tickets;
+
+    @OneToMany(mappedBy = "assignedTeam")
+    private List<Ticket> assignedTickets;
 
 }
