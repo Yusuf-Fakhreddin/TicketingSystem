@@ -9,6 +9,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 @Data
 @RequiredArgsConstructor
 public class TicketDTO {
@@ -29,7 +31,7 @@ public class TicketDTO {
     private TeamName ownerTeam;
     private String assignedUser;
     private TeamName assignedTeam;
-    private String comments;
+    private List<CommentDTO> comments;
 
 
 }

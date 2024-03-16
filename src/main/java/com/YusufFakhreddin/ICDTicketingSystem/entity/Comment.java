@@ -22,8 +22,6 @@ public class Comment {
     private User author;
 
 
-
-
 //    constructor to initialize date and time with current date and time
     public Comment(String ticket_id, String comment, User author) {
         this.ticket_id = ticket_id;
@@ -31,19 +29,6 @@ public class Comment {
         this.author = author;
         this.date= java.time.LocalDate.now().toString();
         this.time= java.time.LocalTime.now().toString();
-    }
-
-
-    //    Define toString method
-    @Override
-    public String toString() {
-        return "Comment{" +
-                "id='" + id + '\'' +
-                ", ticket_id='" + ticket_id + '\'' +
-                ", comment='" + comment + '\'' +
-                ", date='" + date + '\'' +
-                ", time='" + time + '\'' +
-                '}';
     }
 
     public void setTicket_id(String id) {

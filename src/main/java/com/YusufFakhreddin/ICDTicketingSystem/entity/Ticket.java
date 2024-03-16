@@ -75,24 +75,5 @@ public class Ticket {
         this.comments.add(comment);
     }
 
-    //    Define toString method
-    @Override
-    public String toString() {
-        return "Ticket{" +
-                "id='" + id + '\'' +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", status='" + status + '\'' +
-                ", priority='" + priority + '\'' +
-                ", type='" + type + '\'' +
-                ", date='" + date + '\'' +
-                ", time='" + time + '\'' +
-                ", owner='" + owner + '\'' +
-                ", ownerTeam='" + ownerTeam + '\'' +
-                ", assignedUser='" + assignedUser + '\'' +
-                ", assignedTeam='" + assignedTeam + '\'' +
-                ", comments=" + comments +
-                '}';
-    }
 
 }

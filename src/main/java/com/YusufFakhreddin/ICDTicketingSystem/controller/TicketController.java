@@ -91,7 +91,7 @@ public class TicketController {
         System.out.println("Adding comment to ticket");
 //        Create a new comment object to set the date and time
         User loggedInUser = userService.findUserByUsername(principal.getName());
-        Comment newComment = new Comment(comment.getTicket_id(), comment.getComment(), loggedInUser);
+        Comment newComment = new Comment(id, comment.getComment(), loggedInUser);
         TicketDTO ticket= ticketService.addCommentToTicket(id, newComment);
         return new ApiResopnse<>(HttpStatus.OK.value(), "Comment added successfully", ticket);
     }
