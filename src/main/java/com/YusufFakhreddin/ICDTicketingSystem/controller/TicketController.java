@@ -11,7 +11,9 @@ import com.YusufFakhreddin.ICDTicketingSystem.service.TicketService;
 import com.YusufFakhreddin.ICDTicketingSystem.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -36,10 +38,14 @@ public class TicketController {
     private ModelMapperUtil modelMapperUtil;
 
     @GetMapping
-    public ApiResopnse<List<TicketDTO>> getAllTickets() {
-//        log executing this method
-        System.out.println("Getting all tickets");
-        return new ApiResopnse<>(HttpStatus.OK.value(), "Tickets retrieved successfully", ticketService.getAllTickets());
+//    With parameters: /all?page=1&size=20
+//    Without parameters: /all (this will use the default values)
+    public ApiResopnse<Page<TicketDTO>> getAllTickets(@RequestParam(required = false, defaultValue = "0") Integer page,
+                                                      @RequestParam(required = false, defaultValue = "10") Integer size) {
+        // create page request
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<TicketDTO> tickets = ticketService.getAllTickets(pageRequest);
+        return new ApiResopnse<>(HttpStatus.OK.value(), "Tickets retrieved successfully", tickets );
     }
 
     @GetMapping("/{id}")
@@ -97,23 +103,29 @@ public class TicketController {
     }
 
     @GetMapping("/owner/{username}")
-    public ApiResopnse<List<TicketDTO>> getTicketsByOwner(@PathVariable String username) {
-        return new ApiResopnse<>(HttpStatus.OK.value(), "Tickets retrieved successfully", ticketService.getTicketsByOwner(username));
+    public ApiResopnse<Page<TicketDTO>> getTicketsByOwner(@PathVariable String username, @RequestParam(required = false, defaultValue = "0") Integer page,
+                                                         @RequestParam(required = false, defaultValue = "10") Integer size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return new ApiResopnse<>(HttpStatus.OK.value(), "Tickets retrieved successfully", ticketService.getTicketsByOwner(username, pageRequest));
     }
 
     @GetMapping("/owner/{username}/status/{status}")
-    public ApiResopnse<List<TicketDTO>> getTicketsByOwnerAndStatus(@PathVariable String username, @PathVariable TicketStatus status) {
-        return new ApiResopnse<>(HttpStatus.OK.value(), "Tickets retrieved successfully", ticketService.findTicketsByOwnerAndStatusWithoutComments(username, status));
+    public ApiResopnse<Page<TicketDTO>> getTicketsByOwnerAndStatus(@PathVariable String username, @PathVariable TicketStatus status,@RequestParam(required = false, defaultValue = "0") Integer page,
+                                                                   @RequestParam(required = false, defaultValue = "10") Integer size ) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return new ApiResopnse<>(HttpStatus.OK.value(), "Tickets retrieved successfully", ticketService.findTicketsByOwnerAndStatusWithoutComments(username, status, pageRequest));
     }
 
 
 @GetMapping("/my-tickets")
-    public ApiResopnse<List<TicketDTO>> getMyTickets(@RequestParam(required = false) TicketStatus status, Principal principal) {
+    public ApiResopnse<Page<TicketDTO>> getMyTickets(@RequestParam(required = false) TicketStatus status, @RequestParam(required = false, defaultValue = "0") Integer page,
+                                                     @RequestParam(required = false, defaultValue = "10") Integer size , Principal principal) {
+        PageRequest pageRequest = PageRequest.of(page, size);
         User user = userService.findUserByUsername(principal.getName());
         if (status == null) {
-            return new ApiResopnse<>(HttpStatus.OK.value(), "Tickets retrieved successfully", ticketService.getTicketsByOwner(user.getUsername()));
+            return new ApiResopnse<>(HttpStatus.OK.value(), "Tickets retrieved successfully", ticketService.getTicketsByOwner(user.getUsername(),pageRequest));
         }
-        return new ApiResopnse<>(HttpStatus.OK.value(), "Tickets retrieved successfully", ticketService.findTicketsByOwnerAndStatusWithoutComments(user.getUsername(), status));
+        return new ApiResopnse<>(HttpStatus.OK.value(), "Tickets retrieved successfully", ticketService.findTicketsByOwnerAndStatusWithoutComments(user.getUsername(), status,pageRequest));
     }
 
 

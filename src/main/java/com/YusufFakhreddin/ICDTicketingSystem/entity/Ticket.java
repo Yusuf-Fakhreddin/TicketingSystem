@@ -48,26 +48,31 @@ public class Ticket {
     @ManyToOne
     @JoinColumn(name = "owner", nullable = false)
 @JsonManagedReference
+    @ToString.Exclude
     private User owner;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_team_id", nullable = false)
     @JsonBackReference
+    @ToString.Exclude
     private Team ownerTeam;
 
     @ManyToOne
     @JoinColumn(name = "assigned_user", referencedColumnName = "username")
+    @ToString.Exclude
     private User assignedUser;
 
 
     @ManyToOne
     @JoinColumn(name = "assigned_team_id", referencedColumnName = "id")
+    @ToString.Exclude
     private Team assignedTeam;
 
     // link to comment
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @JoinColumn(name = "ticket_id")
+    @ToString.Exclude
     private List<Comment> comments;
 
     public void addComment(Comment comment) {

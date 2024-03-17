@@ -2,6 +2,8 @@ package com.YusufFakhreddin.ICDTicketingSystem.dao;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Ticket;
 import com.YusufFakhreddin.ICDTicketingSystem.enums.TeamName;
 import com.YusufFakhreddin.ICDTicketingSystem.enums.TicketStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -18,11 +20,11 @@ public interface TicketRepo extends JpaRepository<Ticket, String> {
     List<Ticket> findAllTicketsWithoutComments();
 
 //    query to get tickets by owner
-    List<Ticket> findTicketsByOwner_Username(String username);
+    Page<Ticket> findTicketsByOwner_Username(String username, Pageable pageable);
 
 //    query to get tickets by owner and status without comments
     @Query("SELECT t FROM Ticket t WHERE t.owner.username = ?1 AND t.status = ?2")
-    List<Ticket> findTicketsByOwnerAndStatusWithoutComments(String username, TicketStatus status);
+    Page<Ticket> findTicketsByOwnerAndStatusWithoutComments(String username, TicketStatus status,Pageable pageable);
 
 
 }

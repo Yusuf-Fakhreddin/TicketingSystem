@@ -3,25 +3,26 @@ package com.YusufFakhreddin.ICDTicketingSystem.service;
 import com.YusufFakhreddin.ICDTicketingSystem.dto.TicketDTO;
 import com.YusufFakhreddin.ICDTicketingSystem.dto.TicketResolutionDTO;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Comment;
-import com.YusufFakhreddin.ICDTicketingSystem.entity.Team;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Ticket;
-import com.YusufFakhreddin.ICDTicketingSystem.enums.TeamName;
 import com.YusufFakhreddin.ICDTicketingSystem.enums.TicketStatus;
+import org.springframework.data.domain.Page;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface TicketService {
     TicketDTO createTicket(Ticket ticket);
     TicketDTO getTicket(String id);
-    List<TicketDTO> getAllTickets();
+    Page<TicketDTO> getAllTickets(Pageable pageable);
     TicketDTO updateTicket(String id,TicketDTO ticketDTO);
     void deleteTicket(String id);
 
     TicketDTO addCommentToTicket(String id, Comment comment);
 
-    List<TicketDTO> getTicketsByOwner(String username);
+    Page<TicketDTO> getTicketsByOwner(String username,Pageable pageable);
 
-    List<TicketDTO> findTicketsByOwnerAndStatusWithoutComments(String username, TicketStatus status);
+    Page<TicketDTO> findTicketsByOwnerAndStatusWithoutComments(String username, TicketStatus status, Pageable pageable);
 
     //   resolve ticket by id and resolution string
 

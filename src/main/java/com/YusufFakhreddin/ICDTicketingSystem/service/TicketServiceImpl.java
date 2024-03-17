@@ -7,16 +7,16 @@ import com.YusufFakhreddin.ICDTicketingSystem.dto.ModelMapperUtil;
 import com.YusufFakhreddin.ICDTicketingSystem.dto.TicketDTO;
 import com.YusufFakhreddin.ICDTicketingSystem.dto.TicketResolutionDTO;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Comment;
-import com.YusufFakhreddin.ICDTicketingSystem.entity.Team;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Ticket;
-import com.YusufFakhreddin.ICDTicketingSystem.enums.TeamName;
 import com.YusufFakhreddin.ICDTicketingSystem.enums.TicketStatus;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,11 +51,9 @@ public class TicketServiceImpl implements TicketService{
     }
 
     @Override
-    public List<TicketDTO> getAllTickets(){
-        List<Ticket> tickets = ticketRepo.findAll();
-        return tickets.stream()
-                .map(ticket -> modelMapperUtil.mapObject(ticket, TicketDTO.class))
-                .collect(Collectors.toList());
+    public Page<TicketDTO> getAllTickets(Pageable pageable){
+        Page<Ticket> tickets = ticketRepo.findAll(pageable);
+        return tickets.map(ticket -> modelMapperUtil.mapObject(ticket, TicketDTO.class));
 
     }
 
@@ -95,25 +93,21 @@ public class TicketServiceImpl implements TicketService{
         return modelMapperUtil.mapObject(ticket, TicketDTO.class);
     }
 
-    public List<TicketDTO> getTicketsByOwner(String username){
-        List<Ticket> tickets= ticketRepo.findTicketsByOwner_Username(username);
-        return tickets.stream()
-                .map(ticket -> modelMapperUtil.mapObject(ticket, TicketDTO.class))
-                .collect(Collectors.toList());
+    public Page<TicketDTO> getTicketsByOwner(String username,Pageable pageable){
+        Page<Ticket> tickets= ticketRepo.findTicketsByOwner_Username(username, pageable);
+        return tickets.map(ticket -> modelMapperUtil.mapObject(ticket, TicketDTO.class));
 
     }
 
     @Override
-    public List<TicketDTO> findTicketsByOwnerAndStatusWithoutComments(String username, TicketStatus status) {
-        List<Ticket> tickets=  ticketRepo.findTicketsByOwnerAndStatusWithoutComments(username, status);
-        return tickets.stream()
-                .map(ticket -> modelMapperUtil.mapObject(ticket, TicketDTO.class))
-                .collect(Collectors.toList());
+    public Page<TicketDTO> findTicketsByOwnerAndStatusWithoutComments(String username, TicketStatus status, Pageable pageable) {
+        Page<Ticket> tickets=  ticketRepo.findTicketsByOwnerAndStatusWithoutComments(username, status, pageable);
+        return tickets.map(ticket -> modelMapperUtil.mapObject(ticket, TicketDTO.class));
     }
 
 
-    public List<TicketDTO> getTicketsByOwnerAndStatus(String username, TicketStatus status){
-        List<Ticket> tickets= ticketRepo.findTicketsByOwnerAndStatusWithoutComments(username, status);
+    public List<TicketDTO> getTicketsByOwnerAndStatus(String username, TicketStatus status, Pageable pageable){
+        Page<Ticket> tickets= ticketRepo.findTicketsByOwnerAndStatusWithoutComments(username, status, pageable);
         return tickets.stream()
                 .map(ticket -> modelMapperUtil.mapObject(ticket, TicketDTO.class))
                 .collect(Collectors.toList());
