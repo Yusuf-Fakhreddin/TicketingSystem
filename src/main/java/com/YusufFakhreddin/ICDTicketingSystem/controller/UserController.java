@@ -3,11 +3,14 @@ package com.YusufFakhreddin.ICDTicketingSystem.controller;
 import com.YusufFakhreddin.ICDTicketingSystem.dto.ModelMapperUtil;
 import com.YusufFakhreddin.ICDTicketingSystem.dto.UserDTO;
 
+import com.YusufFakhreddin.ICDTicketingSystem.enums.TicketStatus;
 import com.YusufFakhreddin.ICDTicketingSystem.response.ApiResopnse;
 import com.YusufFakhreddin.ICDTicketingSystem.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 
 import org.springframework.web.bind.annotation.*;
@@ -48,12 +51,16 @@ public class UserController {
 
 
     @GetMapping
-    public ApiResopnse<List<UserDTO>> getAllUsers() {
-        return new ApiResopnse<>(HttpStatus.OK.value(), "Users retrieved successfully", userService.getAllUsers());
+    public ApiResopnse<Page<UserDTO>> getAllUsers(@RequestParam(required = false) TicketStatus status, @RequestParam(required = false, defaultValue = "0") Integer page,
+                                                  @RequestParam(required = false, defaultValue = "10") Integer size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return new ApiResopnse<>(HttpStatus.OK.value(), "Users retrieved successfully", userService.getAllUsers(pageRequest));
     }
 
     @GetMapping("/search/{query}")
-    public ApiResopnse<List<UserDTO>> searchUsers(@PathVariable String query) {
-        return new ApiResopnse<>(HttpStatus.OK.value(), "Users retrieved successfully", userService.searchUsers(query));
+    public ApiResopnse<Page<UserDTO>> searchUsers(@PathVariable String query,@RequestParam(required = false) TicketStatus status, @RequestParam(required = false, defaultValue = "0") Integer page,
+                                                  @RequestParam(required = false, defaultValue = "10") Integer size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return new ApiResopnse<>(HttpStatus.OK.value(), "Users retrieved successfully", userService.searchUsers(query, pageRequest));
     }
 }

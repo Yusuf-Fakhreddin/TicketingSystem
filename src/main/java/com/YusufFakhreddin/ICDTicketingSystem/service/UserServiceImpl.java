@@ -7,6 +7,8 @@ import com.YusufFakhreddin.ICDTicketingSystem.dto.UserDTO;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -40,11 +42,9 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public List<UserDTO> getAllUsers() {
-        List<User> users = userRepo.findAll();
-        return users.stream()
-                .map(user -> modelMapperUtil.mapObject(user, UserDTO.class))
-                .toList();
+    public Page<UserDTO> getAllUsers(Pageable pageable) {
+        Page<User> users = userRepo.findAll(pageable);
+        return users.map(user -> modelMapperUtil.mapObject(user, UserDTO.class));
     }
 
     @Override
@@ -80,10 +80,8 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public List<UserDTO> searchUsers(String query) {
-        List<User> users = userRepo.findByUsernameContaining(query);
-        return users.stream()
-                .map(user -> modelMapperUtil.mapObject(user, UserDTO.class))
-                .toList();
+    public Page<UserDTO> searchUsers(String query,Pageable pageable) {
+        Page<User> users = userRepo.findByUsernameContaining(query,pageable);
+        return users.map(user -> modelMapperUtil.mapObject(user, UserDTO.class));
     }
 }
