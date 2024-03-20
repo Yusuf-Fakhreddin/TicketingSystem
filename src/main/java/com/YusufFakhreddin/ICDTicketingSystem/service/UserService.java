@@ -2,9 +2,11 @@ package com.YusufFakhreddin.ICDTicketingSystem.service;
 
 import com.YusufFakhreddin.ICDTicketingSystem.dto.UserDTO;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.User;
+import com.YusufFakhreddin.ICDTicketingSystem.enums.TeamName;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 
 
 public interface UserService {
@@ -18,4 +20,7 @@ public interface UserService {
     User findUserByUsername(String username);
 
     Page<UserDTO> searchUsers(String query,Pageable pageable);
+
+    List<UserDTO> getUsersByTeam(TeamName teamName);
+
 }

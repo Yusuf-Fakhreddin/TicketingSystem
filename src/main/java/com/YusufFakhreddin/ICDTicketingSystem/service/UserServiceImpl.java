@@ -1,10 +1,13 @@
 package com.YusufFakhreddin.ICDTicketingSystem.service;
 
 import com.YusufFakhreddin.ICDTicketingSystem.ErrorHandling.CustomException;
+import com.YusufFakhreddin.ICDTicketingSystem.dao.TeamRepo;
 import com.YusufFakhreddin.ICDTicketingSystem.dao.UserRepo;
 import com.YusufFakhreddin.ICDTicketingSystem.dto.ModelMapperUtil;
 import com.YusufFakhreddin.ICDTicketingSystem.dto.UserDTO;
+import com.YusufFakhreddin.ICDTicketingSystem.entity.Team;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.User;
+import com.YusufFakhreddin.ICDTicketingSystem.enums.TeamName;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -14,13 +17,17 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService{
 
     private final UserRepo userRepo;
+    private final TeamRepo teamRepo;
     private final ModelMapperUtil modelMapperUtil;
+
 
     @Override
     public UserDTO createUser(UserDTO userDTO) {
@@ -83,5 +90,16 @@ public class UserServiceImpl implements UserService{
     public Page<UserDTO> searchUsers(String query,Pageable pageable) {
         Page<User> users = userRepo.findByUsernameContaining(query,pageable);
         return users.map(user -> modelMapperUtil.mapObject(user, UserDTO.class));
+    }
+
+    public List<UserDTO> getUsersByTeam(TeamName teamName) {
+        Team team = teamRepo.findByName(teamName).orElse(null);
+        if (team == null) {
+            throw new CustomException(HttpStatus.NOT_FOUND.value(),"Team not found - " + teamName);
+        }
+        Set<User> users = team.getUsers();
+        return team.getUsers().stream()
+                .map(user -> modelMapperUtil.mapObject(user, UserDTO.class))
+                .collect(Collectors.toList());
     }
 }

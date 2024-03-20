@@ -3,6 +3,7 @@ package com.YusufFakhreddin.ICDTicketingSystem.controller;
 import com.YusufFakhreddin.ICDTicketingSystem.dto.ModelMapperUtil;
 import com.YusufFakhreddin.ICDTicketingSystem.dto.UserDTO;
 
+import com.YusufFakhreddin.ICDTicketingSystem.enums.TeamName;
 import com.YusufFakhreddin.ICDTicketingSystem.enums.TicketStatus;
 import com.YusufFakhreddin.ICDTicketingSystem.response.ApiResopnse;
 import com.YusufFakhreddin.ICDTicketingSystem.service.UserService;
@@ -62,5 +63,10 @@ public class UserController {
                                                   @RequestParam(required = false, defaultValue = "10") Integer size) {
         PageRequest pageRequest = PageRequest.of(page, size);
         return new ApiResopnse<>(HttpStatus.OK.value(), "Users retrieved successfully", userService.searchUsers(query, pageRequest));
+    }
+
+    @GetMapping("/team/{teamName}")
+    public ApiResopnse<List<UserDTO>> getUsersByTeam(@PathVariable TeamName teamName) {
+        return new ApiResopnse<>(HttpStatus.OK.value(), "Users retrieved successfully", userService.getUsersByTeam(teamName));
     }
 }

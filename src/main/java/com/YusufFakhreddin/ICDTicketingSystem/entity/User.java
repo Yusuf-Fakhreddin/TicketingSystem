@@ -2,17 +2,16 @@ package com.YusufFakhreddin.ICDTicketingSystem.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.List;
 import java.util.Set;
 
 @Entity
 @Table(name = "users")
-@Data
 @NoArgsConstructor
+@Getter
+@Setter
 public class User {
     @Id
     @Column(nullable = false, unique = true)
@@ -31,15 +30,12 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "team_id"))
     private Set<Team> teams;
 
-    @ToString.Exclude
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Ticket> tickets;
 
-    @ToString.Exclude
     @OneToMany(mappedBy = "author")
     private List<Comment> comments;
-    @ToString.Exclude
     @OneToMany(mappedBy = "assignedUser")
     private List<Ticket> assignedTickets;
 

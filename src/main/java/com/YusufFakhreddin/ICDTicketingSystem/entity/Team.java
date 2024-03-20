@@ -21,7 +21,7 @@ public class Team {
 
     @Column(name = "name")
     @Enumerated(EnumType.STRING)
-    private TeamName Name;
+    private TeamName name;
 
     @ManyToMany(mappedBy = "teams")
     private Set<User> users;
