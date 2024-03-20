@@ -15,7 +15,6 @@ import java.util.Map;
 public class CustomExceptionHandler {
 
 //    handle custom thrown exception
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<CustomErrorResponse> handleException(CustomException exc){
         CustomErrorResponse error = new CustomErrorResponse();
@@ -24,8 +23,7 @@ public class CustomExceptionHandler {
         error.setErrors(exc.getErrors());
         error.setTimeStamp(System.currentTimeMillis());
 
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(error, HttpStatus.valueOf(error.getStatus()));
     }
-
 
 }

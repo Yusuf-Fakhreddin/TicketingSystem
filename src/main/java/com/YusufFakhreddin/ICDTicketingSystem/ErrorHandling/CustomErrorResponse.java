@@ -21,6 +21,12 @@ public class CustomErrorResponse {
         this.errors = errors;
     }
 
+    public CustomErrorResponse(int status, String message){
+        this.status = status;
+        this.message = message;
+        this.timeStamp = System.currentTimeMillis();
+    }
+
     public int getStatus(){return status;}
     public void setStatus(int status){this.status = status;}
 
