@@ -1,11 +1,14 @@
 package com.YusufFakhreddin.ICDTicketingSystem.controller;
 
+import com.YusufFakhreddin.ICDTicketingSystem.ErrorHandling.CustomException;
 import com.YusufFakhreddin.ICDTicketingSystem.dto.ModelMapperUtil;
 import com.YusufFakhreddin.ICDTicketingSystem.dto.UserDTO;
 
+import com.YusufFakhreddin.ICDTicketingSystem.entity.Team;
 import com.YusufFakhreddin.ICDTicketingSystem.enums.TeamName;
 import com.YusufFakhreddin.ICDTicketingSystem.enums.TicketStatus;
 import com.YusufFakhreddin.ICDTicketingSystem.response.ApiResopnse;
+import com.YusufFakhreddin.ICDTicketingSystem.service.TeamService;
 import com.YusufFakhreddin.ICDTicketingSystem.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -15,11 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 
 import org.springframework.web.bind.annotation.*;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/api/user")
@@ -27,6 +26,7 @@ import java.util.Set;
 public class UserController {
 
     private final UserService userService;
+    private final TeamService teamService;
     @Autowired
     private ModelMapperUtil modelMapperUtil;
     @PostMapping
@@ -47,7 +47,31 @@ public class UserController {
 
     @PutMapping("/{username}")
     public ApiResopnse<UserDTO> updateUser(@PathVariable String username, @RequestBody UserDTO userDTO) {
-        return new ApiResopnse<>(HttpStatus.OK.value(), "User updated successfully", userService.updateUser(username, userDTO));
+        System.out.println("UserDTO: " + userDTO);
+        // Get the user from the database
+        UserDTO existingUser = userService.getUser(username);
+
+//        if the user is not found, return a 404 response
+        if (existingUser == null) {
+            throw new CustomException(HttpStatus.NOT_FOUND.value(), "User not found");
+        }
+
+//        if the username is not the same as the one in the request body, return a custom exception username cannot be changed
+        if (userDTO.getUsername()!=null && !existingUser.getUsername().equals(userDTO.getUsername())) {
+            throw new CustomException(HttpStatus.BAD_REQUEST.value() ,"Username cannot be changed");
+        }
+
+        // Check if the password field in the UserDTO is null
+        if (userDTO.getPassword() == null) {
+            // If it's null, set the password of the UserDTO to the existing user's password
+            userDTO.setPassword(existingUser.getPassword());
+        }
+
+        // Copy the properties of the UserDTO to the existing user
+        BeanUtils.copyProperties(userDTO, existingUser, modelMapperUtil.getNullPropertyNames(userDTO));
+
+        // Update the user in the database
+        return new ApiResopnse<>(HttpStatus.OK.value(), "User updated successfully", userService.updateUser(username, existingUser));
     }
 
 

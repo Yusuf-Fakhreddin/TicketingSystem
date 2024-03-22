@@ -1,5 +1,6 @@
 package com.YusufFakhreddin.ICDTicketingSystem.service;
 
+import com.YusufFakhreddin.ICDTicketingSystem.dto.AttachmentDTO;
 import com.YusufFakhreddin.ICDTicketingSystem.dto.TicketDTO;
 import com.YusufFakhreddin.ICDTicketingSystem.dto.TicketResolutionDTO;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Comment;
@@ -7,9 +8,7 @@ import com.YusufFakhreddin.ICDTicketingSystem.entity.Ticket;
 import com.YusufFakhreddin.ICDTicketingSystem.enums.TicketStatus;
 import org.springframework.data.domain.Page;
 
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import java.util.List;
 
 public interface TicketService {
     TicketDTO createTicket(Ticket ticket);
@@ -27,5 +26,9 @@ public interface TicketService {
     //   resolve ticket by id and resolution string
 
     TicketDTO resolveTicket(String id, TicketResolutionDTO TicketResolution);
+
+    TicketDTO save(TicketDTO ticket);
+
+    AttachmentDTO getAttachment(String id);
 }
 

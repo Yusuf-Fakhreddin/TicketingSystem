@@ -23,7 +23,6 @@ public class User {
 
 //    one to many relationship with team entity (one user can be in one teams) joined by username and team_id
     @ManyToMany
-    @ToString.Exclude
     @JoinTable(
             name = "user_teams",
             joinColumns = @JoinColumn(name = "username"),

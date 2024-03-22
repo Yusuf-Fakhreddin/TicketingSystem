@@ -1,22 +1,24 @@
 package com.YusufFakhreddin.ICDTicketingSystem.entity;
 
-import ch.qos.logback.core.net.SMTPAppenderBase;
 import com.YusufFakhreddin.ICDTicketingSystem.enums.TicketPriority;
 import com.YusufFakhreddin.ICDTicketingSystem.enums.TicketStatus;
 import com.YusufFakhreddin.ICDTicketingSystem.enums.TicketType;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "tickets")
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,7 +36,7 @@ public class Ticket {
     private String resolution;
 
     @Enumerated(EnumType.STRING)
-    private TicketStatus status;
+    private TicketStatus status= TicketStatus.QUEUED;
 
     @Enumerated(EnumType.STRING)
     private TicketPriority priority;
@@ -42,38 +44,42 @@ public class Ticket {
     @Enumerated(EnumType.STRING)
     private TicketType type;
 
-    private String date;
-    private String time;
+    @Column(name = "date", nullable = false)
+    private LocalDate date;
+
+    @Column(name = "time", nullable = false)
+    private LocalTime time;
+
 
     @ManyToOne
     @JoinColumn(name = "owner", nullable = false)
 @JsonManagedReference
-    @ToString.Exclude
     private User owner;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_team_id", nullable = false)
     @JsonBackReference
-    @ToString.Exclude
     private Team ownerTeam;
 
     @ManyToOne
     @JoinColumn(name = "assigned_user", referencedColumnName = "username")
-    @ToString.Exclude
     private User assignedUser;
 
 
     @ManyToOne
     @JoinColumn(name = "assigned_team_id", referencedColumnName = "id")
-    @ToString.Exclude
     private Team assignedTeam;
 
     // link to comment
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @JoinColumn(name = "ticket_id")
-    @ToString.Exclude
     private List<Comment> comments;
+
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "ticket_id")
+    private List<Attachment> attachments= new ArrayList<>();;
 
     public void addComment(Comment comment) {
         comment.setTicket_id(this.id);

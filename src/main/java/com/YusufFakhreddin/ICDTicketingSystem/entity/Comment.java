@@ -2,6 +2,10 @@ package com.YusufFakhreddin.ICDTicketingSystem.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 @Entity
 @Table(name = "comment")
 @NoArgsConstructor
@@ -14,22 +18,13 @@ public class Comment {
     private String ticket_id;
     private String comment;
 
-    private String date;
-    private String time;
+    private LocalDate date;
+    private LocalTime time;
 
     @ManyToOne
     @JoinColumn(name = "author_username", nullable = false)
     private User author;
 
-
-//    constructor to initialize date and time with current date and time
-    public Comment(String ticket_id, String comment, User author) {
-        this.ticket_id = ticket_id;
-        this.comment = comment;
-        this.author = author;
-        this.date= java.time.LocalDate.now().toString();
-        this.time= java.time.LocalTime.now().toString();
-    }
 
     public void setTicket_id(String id) {
         this.ticket_id = id;

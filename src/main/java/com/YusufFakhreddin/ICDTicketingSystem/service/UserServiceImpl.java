@@ -93,7 +93,7 @@ public class UserServiceImpl implements UserService{
     }
 
     public List<UserDTO> getUsersByTeam(TeamName teamName) {
-        Team team = teamRepo.findByName(teamName).orElse(null);
+        Team team = teamRepo.findByName(teamName);
         if (team == null) {
             throw new CustomException(HttpStatus.NOT_FOUND.value(),"Team not found - " + teamName);
         }

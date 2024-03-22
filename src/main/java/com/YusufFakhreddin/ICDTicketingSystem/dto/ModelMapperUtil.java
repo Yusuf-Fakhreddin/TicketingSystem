@@ -1,26 +1,34 @@
 package com.YusufFakhreddin.ICDTicketingSystem.dto;
 
-import com.YusufFakhreddin.ICDTicketingSystem.ErrorHandling.CustomException;
+import com.YusufFakhreddin.ICDTicketingSystem.entity.Team;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Ticket;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Comment;
+import com.YusufFakhreddin.ICDTicketingSystem.entity.User;
+import com.YusufFakhreddin.ICDTicketingSystem.enums.TeamName;
+import com.YusufFakhreddin.ICDTicketingSystem.service.TeamService;
 import org.modelmapper.MappingException;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.modelmapper.config.Configuration;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import javax.xml.transform.Source;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
 public class ModelMapperUtil {
     private final ModelMapper modelMapper;
+    private final TeamService teamService;
 
     @Autowired
-    public ModelMapperUtil(ModelMapper modelMapper) {
+    public ModelMapperUtil(ModelMapper modelMapper, TeamService teamService) {
         this.modelMapper = modelMapper;
+        this.teamService = teamService;
         this.modelMapper.getConfiguration()
                 .setAmbiguityIgnored(true)
                 .setFieldMatchingEnabled(true)
@@ -32,6 +40,7 @@ public class ModelMapperUtil {
                 map().setAuthor_username(source.getAuthor().getUsername());
             }
         });
+
 
         // Define custom mapping
         this.modelMapper.addMappings(new PropertyMap<Ticket, TicketDTO>() {
@@ -50,19 +59,37 @@ public class ModelMapperUtil {
                 map().setAssignedUser(source.getAssignedUser().getUsername());
                 map().setAssignedTeam(source.getAssignedTeam().getName());
                 // Add more mappings as needed
-                using(ctx -> ((Ticket) ctx.getSource()).getComments().stream()
-                        .map(comment -> modelMapper.map(comment, CommentDTO.class))
-                        .collect(Collectors.toList()))
-                        .map(source, destination.getComments());
+                using(ctx -> {
+                    Ticket ticket = (Ticket) ctx.getSource();
+                    return ticket.getAttachments() != null ? ticket.getAttachments().stream()
+                            .map(attachment -> modelMapper.map(attachment, AttachmentDTO.class))
+                            .collect(Collectors.toList()) : new ArrayList<>();
+                }).map(source, destination.getAttachments());
             }
         });
     }
+
+
+
     public <S, T> T mapObject(S source, Class<T> targetClass) {
-        System.out.println(source);
         try {
             return modelMapper.map(source, targetClass);
         } catch (MappingException ex) {
-            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Error mapping object");
+            System.out.println("Error mapping object: " + ex.getMessage());
+            ex.printStackTrace();
+            return null;
         }
+    }
+
+    public String[] getNullPropertyNames(UserDTO userDTO) {
+        BeanWrapper src = new BeanWrapperImpl(userDTO);
+        java.beans.PropertyDescriptor[] pds = src.getPropertyDescriptors();
+
+        Set<String> emptyNames = new HashSet<>();
+        for (java.beans.PropertyDescriptor pd : pds) {
+            Object srcValue = src.getPropertyValue(pd.getName());
+            if (srcValue == null) emptyNames.add(pd.getName());
+        }
+        return emptyNames.toArray(new String[0]);
     }
 }

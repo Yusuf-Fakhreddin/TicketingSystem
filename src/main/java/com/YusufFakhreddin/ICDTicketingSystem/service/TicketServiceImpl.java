@@ -1,18 +1,17 @@
 package com.YusufFakhreddin.ICDTicketingSystem.service;
 
 import com.YusufFakhreddin.ICDTicketingSystem.ErrorHandling.CustomException;
+import com.YusufFakhreddin.ICDTicketingSystem.dao.AttachmentRepo;
 import com.YusufFakhreddin.ICDTicketingSystem.dao.CommentRepo;
 import com.YusufFakhreddin.ICDTicketingSystem.dao.TicketRepo;
-import com.YusufFakhreddin.ICDTicketingSystem.dto.ModelMapperUtil;
-import com.YusufFakhreddin.ICDTicketingSystem.dto.TicketDTO;
-import com.YusufFakhreddin.ICDTicketingSystem.dto.TicketResolutionDTO;
+import com.YusufFakhreddin.ICDTicketingSystem.dto.*;
+import com.YusufFakhreddin.ICDTicketingSystem.entity.Attachment;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Comment;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Ticket;
 import com.YusufFakhreddin.ICDTicketingSystem.enums.TicketStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +27,9 @@ public class TicketServiceImpl implements TicketService{
     private TicketRepo ticketRepo;
     @Autowired
     private CommentRepo commentRepo;
+
+    @Autowired
+    private AttachmentRepo attachmentRepo;
 
     @Autowired
     private ModelMapperUtil modelMapperUtil;
@@ -124,6 +126,21 @@ public class TicketServiceImpl implements TicketService{
         ticket.setResolution(TicketResolution.getResolution());
         Ticket updatedTicket = ticketRepo.save(ticket);
         return modelMapperUtil.mapObject(updatedTicket, TicketDTO.class);
+    }
+
+    @Override
+    public TicketDTO save(TicketDTO ticket) {
+        Ticket newTicket = modelMapperUtil.mapObject(ticket, Ticket.class);
+        Ticket savedTicket = ticketRepo.save(newTicket);
+        return modelMapperUtil.mapObject(savedTicket, TicketDTO.class);
+    }
+
+    @Override
+    public AttachmentDTO getAttachment(String id) {
+        Attachment attachment = attachmentRepo.findById(id)
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND.value(), "Attachment not found with id: " + id, null));
+
+        return modelMapperUtil.mapObject(attachment, AttachmentDTO.class);
     }
 
 

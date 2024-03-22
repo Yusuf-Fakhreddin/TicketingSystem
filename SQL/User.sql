@@ -111,3 +111,13 @@ CREATE TABLE `user_teams` (
 INSERT INTO `user_teams` (`username`, `team_id`) VALUES ('john', 1);
 INSERT INTO `user_teams` (`username`, `team_id`) VALUES ('susan', 1);
 INSERT INTO `user_teams` (`username`, `team_id`) VALUES ('mary', 2);
+
+
+CREATE TABLE attachment (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    file_name VARCHAR(255) NOT NULL,
+    file_type VARCHAR(255) NOT NULL,
+    data BLOB NOT NULL,
+    ticket_id INT,
+    FOREIGN KEY (ticket_id) REFERENCES tickets(id)
+)ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;

@@ -2,28 +2,34 @@ package com.YusufFakhreddin.ICDTicketingSystem.controller;
 
 import com.YusufFakhreddin.ICDTicketingSystem.ErrorHandling.CustomException;
 import com.YusufFakhreddin.ICDTicketingSystem.dto.*;
-import com.YusufFakhreddin.ICDTicketingSystem.entity.Comment;
-import com.YusufFakhreddin.ICDTicketingSystem.entity.Ticket;
-import com.YusufFakhreddin.ICDTicketingSystem.entity.User;
+import com.YusufFakhreddin.ICDTicketingSystem.entity.*;
+import com.YusufFakhreddin.ICDTicketingSystem.enums.TeamName;
 import com.YusufFakhreddin.ICDTicketingSystem.enums.TicketStatus;
 import com.YusufFakhreddin.ICDTicketingSystem.response.ApiResopnse;
+import com.YusufFakhreddin.ICDTicketingSystem.service.TeamService;
 import com.YusufFakhreddin.ICDTicketingSystem.service.TicketService;
 import com.YusufFakhreddin.ICDTicketingSystem.service.UserService;
+import jakarta.annotation.Resource;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -33,6 +39,7 @@ public class TicketController {
 
     private final TicketService ticketService;
     private final UserService userService;
+    private final TeamService teamService;
 
     @Autowired
     private ModelMapperUtil modelMapperUtil;
@@ -72,10 +79,27 @@ public class TicketController {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.findUserByUsername(auth.getName());
-
-
-
         ticket.setOwner(user);
+
+        TeamName ownerTeamName = ticketDTO.getOwnerTeam();
+        Team ownerTeam = teamService.findTeamByName(ownerTeamName);
+
+        // if team not found throw exception
+        if (ownerTeam == null) {
+            throw new CustomException(HttpStatus.NOT_FOUND.value(), "Team not found - " + ownerTeamName);
+        }
+        ticket.setOwnerTeam(ownerTeam);
+
+        TeamName assignedTeamName = ticketDTO.getAssignedTeam();
+        Team assignedTeam = teamService.findTeamByName(assignedTeamName);
+
+        // if assigned team not found throw exception
+        if (assignedTeam == null) {
+            throw new CustomException(HttpStatus.NOT_FOUND.value(), "Assigned team not found - " + assignedTeamName);
+        }
+        ticket.setAssignedTeam(assignedTeam);
+
+
         TicketDTO createdTicket = ticketService.createTicket(ticket);
         return new ApiResopnse<>(HttpStatus.CREATED.value(), "Ticket created successfully", createdTicket);
     }
@@ -97,7 +121,8 @@ public class TicketController {
         System.out.println("Adding comment to ticket");
 //        Create a new comment object to set the date and time
         User loggedInUser = userService.findUserByUsername(principal.getName());
-        Comment newComment = new Comment(id, comment.getComment(), loggedInUser);
+        //map commentDTO to comment to save after adding the author_username to be loggedInUser
+        Comment newComment = modelMapperUtil.mapObject(comment, Comment.class);
         TicketDTO ticket= ticketService.addCommentToTicket(id, newComment);
         return new ApiResopnse<>(HttpStatus.OK.value(), "Comment added successfully", ticket);
     }
@@ -134,6 +159,46 @@ public class TicketController {
         String resolution = TicketResolution.getResolution();
         TicketStatus status = TicketResolution.getStatus();
         return new ApiResopnse<>(HttpStatus.OK.value(), "Ticket resolved successfully", ticketService.resolveTicket(id, TicketResolution));
+    }
+
+
+    @PostMapping("/{id}/attachments")
+    public ApiResopnse<?> uploadFile(@PathVariable String id, @RequestParam("file") MultipartFile file) {
+        // Maximum file size in bytes
+        long maxFileSize = 10485760; // 10 MB
+
+        if (file.getSize() > maxFileSize) {
+            return new ApiResopnse<>(HttpStatus.BAD_REQUEST.value(), "File size exceeds the maximum limit of 10 MB", null);
+        }
+
+        try {
+            TicketDTO ticket = ticketService.getTicket(id);
+
+            Attachment attachment = new Attachment();
+            attachment.setFileName(file.getOriginalFilename());
+            attachment.setFileType(file.getContentType());
+            attachment.setData(file.getBytes());
+
+            AttachmentDTO attachmentDTO = modelMapperUtil.mapObject(attachment, AttachmentDTO.class);
+            ticket.getAttachments().add(attachmentDTO);
+
+            TicketDTO savedTicket = ticketService.save(ticket);
+
+            return new ApiResopnse<>(HttpStatus.OK.value(), "File uploaded successfully", savedTicket);
+        } catch (IOException e) {
+            return new ApiResopnse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Error occurred while uploading file: " + e.getMessage(), null);
+        }
+    }
+
+    @GetMapping("/attachments/{id}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable String id) {
+        // Load file from database
+        AttachmentDTO attachment = ticketService.getAttachment(id);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(attachment.getFileType()))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + attachment.getFileName() + "\"")
+                .body((Resource) new ByteArrayResource(attachment.getData()));
     }
 
 
