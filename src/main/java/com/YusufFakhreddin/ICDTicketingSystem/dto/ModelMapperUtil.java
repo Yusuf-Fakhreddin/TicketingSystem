@@ -1,11 +1,9 @@
 package com.YusufFakhreddin.ICDTicketingSystem.dto;
 
-import com.YusufFakhreddin.ICDTicketingSystem.entity.Team;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Ticket;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.Comment;
-import com.YusufFakhreddin.ICDTicketingSystem.entity.User;
-import com.YusufFakhreddin.ICDTicketingSystem.enums.TeamName;
 import com.YusufFakhreddin.ICDTicketingSystem.service.TeamService;
+import com.YusufFakhreddin.ICDTicketingSystem.service.UserService;
 import org.modelmapper.MappingException;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
@@ -23,12 +21,10 @@ import java.util.stream.Collectors;
 @Component
 public class ModelMapperUtil {
     private final ModelMapper modelMapper;
-    private final TeamService teamService;
 
     @Autowired
-    public ModelMapperUtil(ModelMapper modelMapper, TeamService teamService) {
+    public ModelMapperUtil(ModelMapper modelMapper) {
         this.modelMapper = modelMapper;
-        this.teamService = teamService;
         this.modelMapper.getConfiguration()
                 .setAmbiguityIgnored(true)
                 .setFieldMatchingEnabled(true)

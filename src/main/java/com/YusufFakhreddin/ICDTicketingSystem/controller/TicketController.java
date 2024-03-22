@@ -1,6 +1,7 @@
 package com.YusufFakhreddin.ICDTicketingSystem.controller;
 
 import com.YusufFakhreddin.ICDTicketingSystem.ErrorHandling.CustomException;
+import com.YusufFakhreddin.ICDTicketingSystem.config.FileStorageProperties;
 import com.YusufFakhreddin.ICDTicketingSystem.dto.*;
 import com.YusufFakhreddin.ICDTicketingSystem.entity.*;
 import com.YusufFakhreddin.ICDTicketingSystem.enums.TeamName;
@@ -28,9 +29,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/ticket")
@@ -162,6 +167,7 @@ public class TicketController {
     }
 
 
+
     @PostMapping("/{id}/attachments")
     public ApiResopnse<?> uploadFile(@PathVariable String id, @RequestParam("file") MultipartFile file) {
         // Maximum file size in bytes
@@ -172,33 +178,26 @@ public class TicketController {
         }
 
         try {
-            TicketDTO ticket = ticketService.getTicket(id);
-
-            Attachment attachment = new Attachment();
-            attachment.setFileName(file.getOriginalFilename());
-            attachment.setFileType(file.getContentType());
-            attachment.setData(file.getBytes());
-
-            AttachmentDTO attachmentDTO = modelMapperUtil.mapObject(attachment, AttachmentDTO.class);
-            ticket.getAttachments().add(attachmentDTO);
-
-            TicketDTO savedTicket = ticketService.save(ticket);
-
-            return new ApiResopnse<>(HttpStatus.OK.value(), "File uploaded successfully", savedTicket);
+            TicketDTO ticket = ticketService.addFileToTicket(id, file);
+            return new ApiResopnse<>(HttpStatus.OK.value(), "File uploaded successfully", ticket);
         } catch (IOException e) {
-            return new ApiResopnse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Error occurred while uploading file: " + e.getMessage(), null);
+            // This will catch any IO exceptions, including file not found and permission issues
+            System.out.println("Error occurred while uploading file: " + e.getMessage());
+        } catch (Exception e) {
+            // This will catch any other exceptions
+            System.out.println("An error occurred: " + e.getMessage());
         }
+        return new ApiResopnse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "An error occurred while uploading the file", null);
     }
-
     @GetMapping("/attachments/{id}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable String id) {
+    public ResponseEntity<ByteArrayResource> downloadFile(@PathVariable String id) {
         // Load file from database
         AttachmentDTO attachment = ticketService.getAttachment(id);
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(attachment.getFileType()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + attachment.getFileName() + "\"")
-                .body((Resource) new ByteArrayResource(attachment.getData()));
+                .body(new ByteArrayResource(attachment.getData()));
     }
 
 

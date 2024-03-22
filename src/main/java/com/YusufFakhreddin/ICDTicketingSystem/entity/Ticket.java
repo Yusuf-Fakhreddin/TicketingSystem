@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.annotations.Cascade;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -57,17 +58,17 @@ public class Ticket {
     private User owner;
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade =CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_team_id", nullable = false)
     @JsonBackReference
     private Team ownerTeam;
 
-    @ManyToOne
+    @ManyToOne(cascade=CascadeType.PERSIST)
     @JoinColumn(name = "assigned_user", referencedColumnName = "username")
     private User assignedUser;
 
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "assigned_team_id", referencedColumnName = "id")
     private Team assignedTeam;
 

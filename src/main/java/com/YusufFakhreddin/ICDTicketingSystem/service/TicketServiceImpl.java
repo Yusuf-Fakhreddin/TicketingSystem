@@ -1,6 +1,7 @@
 package com.YusufFakhreddin.ICDTicketingSystem.service;
 
 import com.YusufFakhreddin.ICDTicketingSystem.ErrorHandling.CustomException;
+import com.YusufFakhreddin.ICDTicketingSystem.config.FileStorageProperties;
 import com.YusufFakhreddin.ICDTicketingSystem.dao.AttachmentRepo;
 import com.YusufFakhreddin.ICDTicketingSystem.dao.CommentRepo;
 import com.YusufFakhreddin.ICDTicketingSystem.dao.TicketRepo;
@@ -16,7 +17,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,7 +38,8 @@ public class TicketServiceImpl implements TicketService{
 
     @Autowired
     private AttachmentRepo attachmentRepo;
-
+    @Autowired
+    private FileStorageProperties fileStorageProperties;
     @Autowired
     private ModelMapperUtil modelMapperUtil;
 
@@ -141,6 +150,39 @@ public class TicketServiceImpl implements TicketService{
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND.value(), "Attachment not found with id: " + id, null));
 
         return modelMapperUtil.mapObject(attachment, AttachmentDTO.class);
+    }
+
+
+    @Override
+    public TicketDTO addFileToTicket(String ticketId, MultipartFile file) throws IOException {
+        Ticket ticket = ticketRepo.findById(ticketId).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND.value(),"Ticket id not found - " + ticketId));
+
+        // Generate a unique ID for the file
+        String uniqueId = UUID.randomUUID().toString();
+
+        // Get the upload directory from application.properties
+        String uploadDir = fileStorageProperties.getUploadDir();
+
+        // Get the original file name and extension
+        String originalFileName = file.getOriginalFilename();
+        String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
+
+        // Save the file to the directory specified in application.properties with its extension
+        Path path = Paths.get(uploadDir + uniqueId + extension);
+        Files.copy(file.getInputStream(), path);
+
+        Attachment attachment = new Attachment();
+        attachment.setFileName(uniqueId + extension);
+        attachment.setFileType(file.getContentType());
+        // Save the unique ID instead of the file data
+        attachment.setData(uniqueId.getBytes());
+
+        attachmentRepo.save(attachment);
+        ticket.getAttachments().add(attachment);
+
+        ticketRepo.save(ticket);
+
+        return modelMapperUtil.mapObject(ticket, TicketDTO.class);
     }
 
 

@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AttachmentRepo extends JpaRepository<Attachment, String> {
+
+    Attachment save (Attachment attachment);
 }

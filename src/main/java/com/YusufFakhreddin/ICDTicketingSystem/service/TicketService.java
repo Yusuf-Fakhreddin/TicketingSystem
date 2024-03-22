@@ -9,6 +9,9 @@ import com.YusufFakhreddin.ICDTicketingSystem.enums.TicketStatus;
 import org.springframework.data.domain.Page;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 public interface TicketService {
     TicketDTO createTicket(Ticket ticket);
@@ -30,5 +33,7 @@ public interface TicketService {
     TicketDTO save(TicketDTO ticket);
 
     AttachmentDTO getAttachment(String id);
+
+    TicketDTO addFileToTicket(String ticketId, MultipartFile file) throws IOException;
 }
 
