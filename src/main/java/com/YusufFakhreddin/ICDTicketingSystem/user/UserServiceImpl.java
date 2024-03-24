@@ -2,7 +2,7 @@ package com.YusufFakhreddin.ICDTicketingSystem.user;
 
 import com.YusufFakhreddin.ICDTicketingSystem.errorHandling.CustomException;
 import com.YusufFakhreddin.ICDTicketingSystem.team.TeamRepo;
-import com.YusufFakhreddin.ICDTicketingSystem.utilities.ModelMapperUtil;
+import com.YusufFakhreddin.ICDTicketingSystem.mapper.ModelMapperUtil;
 import com.YusufFakhreddin.ICDTicketingSystem.team.Team;
 import com.YusufFakhreddin.ICDTicketingSystem.team.enums.TeamName;
 import jakarta.transaction.Transactional;
@@ -24,7 +24,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepo userRepo;
     private final TeamRepo teamRepo;
     private final ModelMapperUtil modelMapperUtil;
-
 
     @Override
     public UserDTO createUser(UserDTO userDTO) {

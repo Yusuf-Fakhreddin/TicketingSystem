@@ -2,23 +2,15 @@ package com.YusufFakhreddin.ICDTicketingSystem.ticket;
 
 import com.YusufFakhreddin.ICDTicketingSystem.errorHandling.CustomException;
 import com.YusufFakhreddin.ICDTicketingSystem.attachment.AttachmentDTO;
-import com.YusufFakhreddin.ICDTicketingSystem.comment.Comment;
 import com.YusufFakhreddin.ICDTicketingSystem.comment.CommentDTO;
-import com.YusufFakhreddin.ICDTicketingSystem.utilities.*;
-import com.YusufFakhreddin.ICDTicketingSystem.team.enums.TeamName;
 import com.YusufFakhreddin.ICDTicketingSystem.ticket.dto.TicketDTO;
 import com.YusufFakhreddin.ICDTicketingSystem.ticket.dto.TicketResolutionDTO;
 import com.YusufFakhreddin.ICDTicketingSystem.ticket.enums.TicketStatus;
 import com.YusufFakhreddin.ICDTicketingSystem.response.ApiResopnse;
-import com.YusufFakhreddin.ICDTicketingSystem.team.Team;
-import com.YusufFakhreddin.ICDTicketingSystem.team.TeamService;
-import com.YusufFakhreddin.ICDTicketingSystem.user.User;
-import com.YusufFakhreddin.ICDTicketingSystem.user.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -42,12 +34,6 @@ import java.util.Map;
 public class TicketController {
 
     private final TicketService ticketService;
-    private final UserService userService;
-    private final TeamService teamService;
-
-    @Autowired
-    private ModelMapperUtil modelMapperUtil;
-
     @GetMapping
 //    With parameters: /all?page=1&size=20
 //    Without parameters: /all (this will use the default values)
@@ -61,9 +47,6 @@ public class TicketController {
 
     @GetMapping("/{id}")
     public ApiResopnse<TicketDTO> getTicket(@PathVariable String id) throws CustomException {
-//        log the id
-        System.out.println(id);
-//        get ticket and its comments
         TicketDTO ticket = ticketService.getTicket(id);
         return new ApiResopnse<>(HttpStatus.OK.value(), "Ticket retrieved successfully", ticket);
     }
@@ -73,47 +56,20 @@ public class TicketController {
         if (bindingResult.hasErrors()) {
             Map<String, String> errors = new HashMap<>();
             bindingResult.getFieldErrors().forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
-            System.out.println(errors.toString());
             throw new CustomException(HttpStatus.BAD_REQUEST.value(), "Validation errors occurred", errors);
         }
-        System.out.println("Creating ticket");
 
-        // Convert TicketDTO to Ticket entity
-        Ticket ticket = modelMapperUtil.mapObject(ticketDTO, Ticket.class);
-
+        // Get the authenticated user
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = userService.findUserByUsername(auth.getName());
-        ticket.setOwner(user);
+        ticketDTO.setOwner(auth.getName());
 
-        TeamName ownerTeamName = ticketDTO.getOwnerTeam();
-        Team ownerTeam = teamService.findTeamByName(ownerTeamName);
-
-        // if team not found throw exception
-        if (ownerTeam == null) {
-            throw new CustomException(HttpStatus.NOT_FOUND.value(), "Team not found - " + ownerTeamName);
-        }
-        ticket.setOwnerTeam(ownerTeam);
-
-        TeamName assignedTeamName = ticketDTO.getAssignedTeam();
-        Team assignedTeam = teamService.findTeamByName(assignedTeamName);
-
-        // if assigned team not found throw exception
-        if (assignedTeam == null) {
-            throw new CustomException(HttpStatus.NOT_FOUND.value(), "Assigned team not found - " + assignedTeamName);
-        }
-        ticket.setAssignedTeam(assignedTeam);
-
-
-        TicketDTO createdTicket = ticketService.createTicket(ticket);
+        TicketDTO createdTicket = ticketService.createTicket(ticketDTO);
         return new ApiResopnse<>(HttpStatus.CREATED.value(), "Ticket created successfully", createdTicket);
     }
 
 
     @DeleteMapping("/{id}")
     public ApiResopnse<Void> deleteTicket(@PathVariable String id) throws CustomException {
-        //        log executing this method
-        System.out.println("Deleting ticket");
-
         ticketService.deleteTicket(id);
         return new ApiResopnse<>(HttpStatus.NO_CONTENT.value(), "Ticket deleted successfully", null);
     }
@@ -121,13 +77,8 @@ public class TicketController {
 
     @PostMapping("/{id}/comments")
     @Transactional
-    public ApiResopnse<?> addCommentToTicket(@PathVariable String id, @RequestBody CommentDTO comment, Principal principal) {
-        System.out.println("Adding comment to ticket");
-//        Create a new comment object to set the date and time
-        User loggedInUser = userService.findUserByUsername(principal.getName());
-        //map commentDTO to comment to save after adding the author_username to be loggedInUser
-        Comment newComment = modelMapperUtil.mapObject(comment, Comment.class);
-        TicketDTO ticket= ticketService.addCommentToTicket(id, newComment);
+    public ApiResopnse<?> addCommentToTicket(@PathVariable String id, @RequestBody CommentDTO comment) {
+        TicketDTO ticket= ticketService.addCommentToTicket(id, comment);
         return new ApiResopnse<>(HttpStatus.OK.value(), "Comment added successfully", ticket);
     }
 
@@ -150,19 +101,22 @@ public class TicketController {
     public ApiResopnse<Page<TicketDTO>> getMyTickets(@RequestParam(required = false) TicketStatus status, @RequestParam(required = false, defaultValue = "0") Integer page,
                                                      @RequestParam(required = false, defaultValue = "10") Integer size , Principal principal) {
         PageRequest pageRequest = PageRequest.of(page, size);
-        User user = userService.findUserByUsername(principal.getName());
+        String username = principal.getName();
+
+        Page<TicketDTO> tickets = null ;
         if (status == null) {
-            return new ApiResopnse<>(HttpStatus.OK.value(), "Tickets retrieved successfully", ticketService.getTicketsByOwner(user.getUsername(),pageRequest));
+            tickets = ticketService.getTicketsByOwner(username, pageRequest);
+        } else {
+            tickets = ticketService.findTicketsByOwnerAndStatusWithoutComments(username, status, pageRequest);
         }
-        return new ApiResopnse<>(HttpStatus.OK.value(), "Tickets retrieved successfully", ticketService.findTicketsByOwnerAndStatusWithoutComments(user.getUsername(), status,pageRequest));
+        return new ApiResopnse<>(HttpStatus.OK.value(), "Tickets retrieved successfully", tickets);
     }
 
 
     @PutMapping("/resolve/{id}")
     public ApiResopnse<TicketDTO> resolveTicket(@PathVariable String id, @RequestBody TicketResolutionDTO TicketResolution) {
-        String resolution = TicketResolution.getResolution();
-        TicketStatus status = TicketResolution.getStatus();
-        return new ApiResopnse<>(HttpStatus.OK.value(), "Ticket resolved successfully", ticketService.resolveTicket(id, TicketResolution));
+        TicketDTO ticket = ticketService.resolveTicket(id, TicketResolution);
+        return new ApiResopnse<>(HttpStatus.OK.value(), "Ticket resolved successfully", ticket);
     }
 
 

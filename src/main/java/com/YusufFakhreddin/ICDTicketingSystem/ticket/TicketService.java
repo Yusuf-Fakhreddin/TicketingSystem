@@ -1,7 +1,7 @@
 package com.YusufFakhreddin.ICDTicketingSystem.ticket;
 
 import com.YusufFakhreddin.ICDTicketingSystem.attachment.AttachmentDTO;
-import com.YusufFakhreddin.ICDTicketingSystem.comment.Comment;
+import com.YusufFakhreddin.ICDTicketingSystem.comment.CommentDTO;
 import com.YusufFakhreddin.ICDTicketingSystem.ticket.dto.TicketDTO;
 import com.YusufFakhreddin.ICDTicketingSystem.ticket.dto.TicketResolutionDTO;
 import com.YusufFakhreddin.ICDTicketingSystem.ticket.enums.TicketStatus;
@@ -13,13 +13,13 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 public interface TicketService {
-    TicketDTO createTicket(Ticket ticket);
+    TicketDTO createTicket(TicketDTO ticketDTO);
     TicketDTO getTicket(String id);
     Page<TicketDTO> getAllTickets(Pageable pageable);
     TicketDTO updateTicket(String id,TicketDTO ticketDTO);
     void deleteTicket(String id);
 
-    TicketDTO addCommentToTicket(String id, Comment comment);
+    TicketDTO addCommentToTicket(String id, CommentDTO commentDTO);
 
     Page<TicketDTO> getTicketsByOwner(String username,Pageable pageable);
 

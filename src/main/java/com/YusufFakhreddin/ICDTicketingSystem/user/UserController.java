@@ -1,12 +1,13 @@
 package com.YusufFakhreddin.ICDTicketingSystem.user;
 
 import com.YusufFakhreddin.ICDTicketingSystem.errorHandling.CustomException;
-import com.YusufFakhreddin.ICDTicketingSystem.utilities.ModelMapperUtil;
+import com.YusufFakhreddin.ICDTicketingSystem.mapper.ModelMapperUtil;
 
 import com.YusufFakhreddin.ICDTicketingSystem.team.enums.TeamName;
 import com.YusufFakhreddin.ICDTicketingSystem.ticket.enums.TicketStatus;
 import com.YusufFakhreddin.ICDTicketingSystem.response.ApiResopnse;
 import com.YusufFakhreddin.ICDTicketingSystem.team.TeamService;
+import com.YusufFakhreddin.ICDTicketingSystem.utilities.BeanUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +24,8 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-    private final TeamService teamService;
-    @Autowired
-    private ModelMapperUtil modelMapperUtil;
+    private final BeanUtil beanUtil;
+
     @PostMapping
     public ApiResopnse<UserDTO> createUser(@RequestBody UserDTO userDTO) {
         return new ApiResopnse<>(HttpStatus.CREATED.value(), "User created successfully", userService.createUser(userDTO));
@@ -65,7 +65,7 @@ public class UserController {
         }
 
         // Copy the properties of the UserDTO to the existing user
-        BeanUtils.copyProperties(userDTO, existingUser, modelMapperUtil.getNullPropertyNames(userDTO));
+        BeanUtils.copyProperties(userDTO, existingUser, beanUtil.getNullPropertyNames(userDTO));
 
         // Update the user in the database
         return new ApiResopnse<>(HttpStatus.OK.value(), "User updated successfully", userService.updateUser(username, existingUser));

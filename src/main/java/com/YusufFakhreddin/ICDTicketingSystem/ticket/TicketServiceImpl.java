@@ -1,11 +1,12 @@
 package com.YusufFakhreddin.ICDTicketingSystem.ticket;
 
+import com.YusufFakhreddin.ICDTicketingSystem.comment.CommentDTO;
 import com.YusufFakhreddin.ICDTicketingSystem.errorHandling.CustomException;
 import com.YusufFakhreddin.ICDTicketingSystem.attachment.AttachmentDTO;
 import com.YusufFakhreddin.ICDTicketingSystem.config.FileStorageProperties;
 import com.YusufFakhreddin.ICDTicketingSystem.attachment.AttachmentRepo;
 import com.YusufFakhreddin.ICDTicketingSystem.comment.CommentRepo;
-import com.YusufFakhreddin.ICDTicketingSystem.utilities.*;
+import com.YusufFakhreddin.ICDTicketingSystem.mapper.ModelMapperUtil;
 import com.YusufFakhreddin.ICDTicketingSystem.attachment.Attachment;
 import com.YusufFakhreddin.ICDTicketingSystem.comment.Comment;
 import com.YusufFakhreddin.ICDTicketingSystem.ticket.dto.TicketDTO;
@@ -45,7 +46,8 @@ public class TicketServiceImpl implements TicketService {
     private ModelMapperUtil modelMapperUtil;
 
     @Override
-    public TicketDTO createTicket(Ticket ticket){
+    public TicketDTO createTicket(TicketDTO ticketDTO){
+        Ticket ticket = modelMapperUtil.mapObject(ticketDTO, Ticket.class);
         Ticket newTicket = ticketRepo.save(ticket);
         return modelMapperUtil.mapObject(newTicket, TicketDTO.class);
     }
@@ -97,8 +99,10 @@ public class TicketServiceImpl implements TicketService {
     }
 
 
-    public TicketDTO addCommentToTicket(String ticketId, Comment comment) {
+    public TicketDTO addCommentToTicket(String ticketId, CommentDTO commentDTO) {
         Ticket ticket = ticketRepo.findById(ticketId).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND.value(),"Ticket id not found - " + ticketId));
+//        convert commentDTO to comment
+        Comment comment = modelMapperUtil.mapObject(commentDTO, Comment.class);
         ticket.addComment(comment);
         commentRepo.save(comment);
         ticketRepo.save(ticket);
