@@ -37,4 +37,12 @@ public class CommentMapper {
             }
         });
     }
+
+    public CommentDTO toCommentDTO(Comment comment) {
+        return modelMapper.map(comment, CommentDTO.class);
+    }
+
+    public Comment toComment(CommentDTO commentDTO) {
+        return modelMapper.map(commentDTO, Comment.class);
+    }
 }

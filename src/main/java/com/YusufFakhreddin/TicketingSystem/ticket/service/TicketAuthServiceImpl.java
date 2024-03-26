@@ -6,7 +6,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class TicketAuthServiceImpl {
+public class TicketAuthServiceImpl implements TicketAuthService {
     public boolean isOwnerOrAssignedUser(TicketDTO ticketDTO) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();

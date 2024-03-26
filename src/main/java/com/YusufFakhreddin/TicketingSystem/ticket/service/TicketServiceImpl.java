@@ -1,14 +1,16 @@
 package com.YusufFakhreddin.TicketingSystem.ticket.service;
 
+import com.YusufFakhreddin.TicketingSystem.attachment.AttachmentMapper;
 import com.YusufFakhreddin.TicketingSystem.comment.CommentDTO;
+import com.YusufFakhreddin.TicketingSystem.comment.CommentMapper;
 import com.YusufFakhreddin.TicketingSystem.errorHandling.CustomException;
 import com.YusufFakhreddin.TicketingSystem.attachment.AttachmentDTO;
 import com.YusufFakhreddin.TicketingSystem.config.FileStorageProperties;
 import com.YusufFakhreddin.TicketingSystem.attachment.AttachmentRepo;
 import com.YusufFakhreddin.TicketingSystem.comment.CommentRepo;
 import com.YusufFakhreddin.TicketingSystem.ticket.Ticket;
+import com.YusufFakhreddin.TicketingSystem.ticket.TicketMapper;
 import com.YusufFakhreddin.TicketingSystem.ticket.TicketRepo;
-import com.YusufFakhreddin.TicketingSystem.utilities.ModelMapperUtil;
 import com.YusufFakhreddin.TicketingSystem.attachment.Attachment;
 import com.YusufFakhreddin.TicketingSystem.comment.Comment;
 import com.YusufFakhreddin.TicketingSystem.ticket.dto.TicketDTO;
@@ -45,13 +47,17 @@ public class TicketServiceImpl implements TicketService {
     @Autowired
     private FileStorageProperties fileStorageProperties;
     @Autowired
-    private ModelMapperUtil modelMapperUtil;
+    private final TicketMapper ticketMapper;
+    @Autowired
+    private final CommentMapper commentMapper;
+    @Autowired
+    private final AttachmentMapper AttachmentMapper;
 
     @Override
     public TicketDTO createTicket(TicketDTO ticketDTO){
-        Ticket ticket = modelMapperUtil.mapObject(ticketDTO, Ticket.class);
+        Ticket ticket = ticketMapper.toTicket(ticketDTO);
         Ticket newTicket = ticketRepo.save(ticket);
-        return modelMapperUtil.mapObject(newTicket, TicketDTO.class);
+        return ticketMapper.toTicketDTO(newTicket);
     }
 
     @Override
@@ -62,14 +68,14 @@ public class TicketServiceImpl implements TicketService {
             throw new CustomException(HttpStatus.NOT_FOUND.value(),"Ticket id not found - " + id);
         }
 
-        return modelMapperUtil.mapObject(ticket, TicketDTO.class);
+        return ticketMapper.toTicketDTO(ticket);
 
     }
 
     @Override
     public Page<TicketDTO> getAllTickets(Pageable pageable){
         Page<Ticket> tickets = ticketRepo.findAll(pageable);
-        return tickets.map(ticket -> modelMapperUtil.mapObject(ticket, TicketDTO.class));
+        return tickets.map(ticket -> ticketMapper.toTicketDTO(ticket));
 
     }
 
@@ -80,12 +86,12 @@ public class TicketServiceImpl implements TicketService {
             throw new CustomException(HttpStatus.NOT_FOUND.value(),"Ticket id not found - " + id);
         }
         // Convert TicketDTO to Ticket entity
-        Ticket ticket = modelMapperUtil.mapObject(ticketDTO, Ticket.class);
+        Ticket ticket = ticketMapper.toTicket(ticketDTO);
         // append id to ticket object
         ticket.setId(id);
         Ticket updatedTicket = ticketRepo.save(ticket);
         // Convert updated Ticket back to TicketDTO
-        TicketDTO updatedTicketDTO = modelMapperUtil.mapObject(updatedTicket, TicketDTO.class);
+        TicketDTO updatedTicketDTO = ticketMapper.toTicketDTO(updatedTicket);
         return updatedTicketDTO;
     }
 
@@ -104,30 +110,30 @@ public class TicketServiceImpl implements TicketService {
     public TicketDTO addCommentToTicket(String ticketId, CommentDTO commentDTO) {
         Ticket ticket = ticketRepo.findById(ticketId).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND.value(),"Ticket id not found - " + ticketId));
 //        convert commentDTO to comment
-        Comment comment = modelMapperUtil.mapObject(commentDTO, Comment.class);
+        Comment comment = commentMapper.toComment(commentDTO);
         ticket.addComment(comment);
         commentRepo.save(comment);
         ticketRepo.save(ticket);
-        return modelMapperUtil.mapObject(ticket, TicketDTO.class);
+        return ticketMapper.toTicketDTO(ticket);
     }
 
     public Page<TicketDTO> getTicketsByOwner(String username,Pageable pageable){
         Page<Ticket> tickets= ticketRepo.findTicketsByOwner_Username(username, pageable);
-        return tickets.map(ticket -> modelMapperUtil.mapObject(ticket, TicketDTO.class));
+        return tickets.map(ticket -> ticketMapper.toTicketDTO(ticket));
 
     }
 
     @Override
     public Page<TicketDTO> findTicketsByOwnerAndStatusWithoutComments(String username, TicketStatus status, Pageable pageable) {
         Page<Ticket> tickets=  ticketRepo.findTicketsByOwnerAndStatusWithoutComments(username, status, pageable);
-        return tickets.map(ticket -> modelMapperUtil.mapObject(ticket, TicketDTO.class));
+        return tickets.map(ticket -> ticketMapper.toTicketDTO(ticket));
     }
 
 
     public List<TicketDTO> getTicketsByOwnerAndStatus(String username, TicketStatus status, Pageable pageable){
         Page<Ticket> tickets= ticketRepo.findTicketsByOwnerAndStatusWithoutComments(username, status, pageable);
         return tickets.stream()
-                .map(ticket -> modelMapperUtil.mapObject(ticket, TicketDTO.class))
+                .map(ticket -> ticketMapper.toTicketDTO(ticket))
                 .collect(Collectors.toList());
     }
 
@@ -141,14 +147,14 @@ public class TicketServiceImpl implements TicketService {
         ticket.setStatus(TicketResolution.getStatus());
         ticket.setResolution(TicketResolution.getResolution());
         Ticket updatedTicket = ticketRepo.save(ticket);
-        return modelMapperUtil.mapObject(updatedTicket, TicketDTO.class);
+        return ticketMapper.toTicketDTO(updatedTicket);
     }
 
     @Override
     public TicketDTO save(TicketDTO ticket) {
-        Ticket newTicket = modelMapperUtil.mapObject(ticket, Ticket.class);
+        Ticket newTicket = ticketMapper.toTicket(ticket);
         Ticket savedTicket = ticketRepo.save(newTicket);
-        return modelMapperUtil.mapObject(savedTicket, TicketDTO.class);
+        return ticketMapper.toTicketDTO(savedTicket);
     }
 
     @Override
@@ -156,7 +162,7 @@ public class TicketServiceImpl implements TicketService {
         Attachment attachment = attachmentRepo.findById(id)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND.value(), "Attachment not found with id: " + id, null));
 
-        return modelMapperUtil.mapObject(attachment, AttachmentDTO.class);
+        return AttachmentMapper.toAttachmentDTO(attachment);
     }
 
 
@@ -189,7 +195,7 @@ public class TicketServiceImpl implements TicketService {
 
         ticketRepo.save(ticket);
 
-        return modelMapperUtil.mapObject(ticket, TicketDTO.class);
+        return ticketMapper.toTicketDTO(ticket);
     }
 
 }

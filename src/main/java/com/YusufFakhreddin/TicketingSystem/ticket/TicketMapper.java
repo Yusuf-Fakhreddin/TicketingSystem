@@ -35,6 +35,11 @@ public class TicketMapper {
             protected void configure() {
                 using(ctx -> {
                     TicketDTO ticketDTO = (TicketDTO) ctx.getSource();
+                    return userService.findUserByUsername(ticketDTO.getOwner());
+                }).map(source, destination.getOwner());
+
+                using(ctx -> {
+                    TicketDTO ticketDTO = (TicketDTO) ctx.getSource();
                     return userService.findUserByUsername(ticketDTO.getAssignedUser());
                 }).map(source, destination.getAssignedUser());
 
@@ -54,6 +59,7 @@ public class TicketMapper {
         modelMapper.addMappings(new PropertyMap<Ticket, TicketDTO>() {
             @Override
             protected void configure() {
+                map().setOwner(source.getOwner().getUsername());
                 map().setOwnerTeam(source.getOwnerTeam().getName());
                 map().setAssignedUser(source.getAssignedUser().getUsername());
                 map().setAssignedTeam(source.getAssignedTeam().getName());
@@ -65,5 +71,13 @@ public class TicketMapper {
                 }).map(source, destination.getAttachments());
             }
         });
+    }
+
+    public Ticket toTicket(TicketDTO ticketDTO) {
+        return modelMapper.map(ticketDTO, Ticket.class);
+    }
+
+    public TicketDTO toTicketDTO(Ticket ticket) {
+        return modelMapper.map(ticket, TicketDTO.class);
     }
 }

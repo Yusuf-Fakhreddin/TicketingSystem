@@ -6,11 +6,13 @@ import com.YusufFakhreddin.TicketingSystem.team.enums.TeamName;
 import com.YusufFakhreddin.TicketingSystem.ticket.enums.TicketPriority;
 import com.YusufFakhreddin.TicketingSystem.ticket.enums.TicketStatus;
 import com.YusufFakhreddin.TicketingSystem.ticket.enums.TicketType;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -27,8 +29,8 @@ public class TicketDTO {
     private TicketStatus status= TicketStatus.QUEUED;
     private TicketPriority priority;
     private TicketType type;
-    private LocalDate date=LocalDate.now();
-    private LocalTime time=LocalTime.now();
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private String owner;
     private TeamName ownerTeam;
     private String assignedUser;

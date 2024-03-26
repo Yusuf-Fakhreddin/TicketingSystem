@@ -2,7 +2,6 @@ package com.YusufFakhreddin.TicketingSystem.user;
 
 import com.YusufFakhreddin.TicketingSystem.errorHandling.CustomException;
 import com.YusufFakhreddin.TicketingSystem.team.TeamRepo;
-import com.YusufFakhreddin.TicketingSystem.utilities.ModelMapperUtil;
 import com.YusufFakhreddin.TicketingSystem.team.Team;
 import com.YusufFakhreddin.TicketingSystem.team.enums.TeamName;
 import jakarta.transaction.Transactional;
@@ -23,31 +22,28 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepo userRepo;
     private final TeamRepo teamRepo;
-    private final ModelMapperUtil modelMapperUtil;
+    private final UserMapper userMapper;
 
     @Override
     public UserDTO createUser(UserDTO userDTO) {
-
-        User user = modelMapperUtil.mapObject(userDTO, User.class);
-//        TODO: encrypt the password before saving using bcrypt
-              User newUser = userRepo.save(user);
-              return modelMapperUtil.mapObject(newUser, UserDTO.class);
+        User user = userMapper.toUser(userDTO);
+        User newUser = userRepo.save(user);
+        return userMapper.toUserDTO(newUser);
     }
 
     @Override
     public UserDTO getUser(String username) {
-//        check for id existence and throw custom error if not
         User user = userRepo.findByUsername(username).orElse(null);
         if (user == null) {
             throw new CustomException(HttpStatus.NOT_FOUND.value(),"Username not found - " + username);
         }
-        return modelMapperUtil.mapObject(user, UserDTO.class);
+        return userMapper.toUserDTO(user);
     }
 
     @Override
     public Page<UserDTO> getAllUsers(Pageable pageable) {
         Page<User> users = userRepo.findAll(pageable);
-        return users.map(user -> modelMapperUtil.mapObject(user, UserDTO.class));
+        return users.map(userMapper::toUserDTO);
     }
 
     @Override
@@ -56,10 +52,10 @@ public class UserServiceImpl implements UserService {
         if (user == null) {
             throw new CustomException(HttpStatus.NOT_FOUND.value(),"User username not found - " + username);
         }
-        User updatedUser = modelMapperUtil.mapObject(userDTO, User.class);
+        User updatedUser = userMapper.toUser(userDTO);
         updatedUser.setUsername(username);
         User newUser = userRepo.save(updatedUser);
-        return modelMapperUtil.mapObject(newUser, UserDTO.class);
+        return userMapper.toUserDTO(newUser);
     }
 
     @Override
@@ -85,7 +81,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Page<UserDTO> searchUsers(String query,Pageable pageable) {
         Page<User> users = userRepo.findByUsernameContaining(query,pageable);
-        return users.map(user -> modelMapperUtil.mapObject(user, UserDTO.class));
+        return users.map(userMapper::toUserDTO);
     }
 
     public List<UserDTO> getUsersByTeam(TeamName teamName) {
@@ -94,8 +90,8 @@ public class UserServiceImpl implements UserService {
             throw new CustomException(HttpStatus.NOT_FOUND.value(),"Team not found - " + teamName);
         }
         Set<User> users = team.getUsers();
-        return team.getUsers().stream()
-                .map(user -> modelMapperUtil.mapObject(user, UserDTO.class))
+        return users.stream()
+                .map(userMapper::toUserDTO)
                 .collect(Collectors.toList());
     }
 }

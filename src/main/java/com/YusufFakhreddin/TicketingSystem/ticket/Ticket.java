@@ -14,6 +14,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,11 +49,21 @@ public class Ticket {
     @Enumerated(EnumType.STRING)
     private TicketType type;
 
-    @Column(name = "date", nullable = false)
-    private LocalDate date;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
-    @Column(name = "time", nullable = false)
-    private LocalTime time;
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    @PrePersist
+    public void prePersist() {
+        createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 
 
     @ManyToOne
