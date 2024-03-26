@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.YusufFakhreddin</groupId>
-	<artifactId>ICD-TicketingSystem</artifactId>
+	<artifactId>TicketingSystem</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>ICD-TicketingSystem</name>
 	<description>ICD Ticketing System project backend</description>
