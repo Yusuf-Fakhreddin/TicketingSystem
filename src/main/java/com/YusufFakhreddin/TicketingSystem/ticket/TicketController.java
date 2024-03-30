@@ -70,11 +70,15 @@ public class TicketController {
         return new ApiResopnse<>(HttpStatus.CREATED.value(), "Ticket created successfully", createdTicket);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}/{username}")
 //    update the ticket assigned user to be the logged in user
-    public ApiResopnse<TicketDTO> assignTicketToUser(@PathVariable String id) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName();
+    public ApiResopnse<TicketDTO> assignTicketToUser(@PathVariable String id,@PathVariable String username) {
+    // only the assignedTeam members can assign the ticket to the username in the path
+        TicketDTO ticketDTO = ticketService.getTicket(id);
+        if (!ticketAuthService.isAssignedTeamMember(ticketDTO)) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED.value(), "You are not authorized to assign this ticket", null);
+        }
+
 //        find ticket by id
         TicketDTO ticket = ticketService.getTicket(id);
 //        assign the ticket to the logged in user
@@ -86,6 +90,11 @@ public class TicketController {
 
     @DeleteMapping("/{id}")
     public ApiResopnse<Void> deleteTicket(@PathVariable String id) throws CustomException {
+        // only assigned team members can delete the ticket
+        TicketDTO ticketDTO = ticketService.getTicket(id);
+        if (!ticketAuthService.isAssignedTeamMember(ticketDTO)) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED.value(), "You are not authorized to delete this ticket", null);
+        }
         ticketService.deleteTicket(id);
         return new ApiResopnse<>(HttpStatus.NO_CONTENT.value(), "Ticket deleted successfully", null);
     }
